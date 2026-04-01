@@ -73,13 +73,6 @@ http://localhost:3000
 
 ---
 
-## 🚧 Future Improvements
-
-* 🛒 Shopping cart functionality
-* ❤️ Wishlist feature
-
----
-
 ## 👨‍💻 Author
 
 Ahmed Talaat
