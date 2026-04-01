@@ -76,9 +76,6 @@ http://localhost:3000
 ## 🚧 Future Improvements
 
 * 🛒 Shopping cart functionality
-* 💳 Payment integration
-* 🔐 Authentication system
-* 📦 Backend integration (API / Database)
 * ❤️ Wishlist feature
 
 ---
