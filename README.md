@@ -18,6 +18,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 🧩 Reusable and scalable components
 * 🛒 Products Card
 * 🏷️ Brands Slider
+* ⏳ Skeleton Products
 
 ---
 
