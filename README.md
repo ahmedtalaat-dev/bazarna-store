@@ -17,6 +17,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 🎬 Smooth animations using Framer Motion
 * 🧩 Reusable and scalable components
 * 🛒 Products Card
+* 🏷️ Brands Slider
 
 ---
 
