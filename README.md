@@ -29,6 +29,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 🎨 Tailwind CSS
 * 🎞️ Framer Motion
 * 🎯 Lucide React Icons
+* 💙 Wishlist Page
 
 ---
 
