@@ -19,6 +19,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 🛒 Products Card
 * 🏷️ Brands Slider
 * ⏳ Skeleton Products
+* 💙 Wishlist Page
 
 ---
 
@@ -29,7 +30,6 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 🎨 Tailwind CSS
 * 🎞️ Framer Motion
 * 🎯 Lucide React Icons
-* 💙 Wishlist Page
 
 ---
 
