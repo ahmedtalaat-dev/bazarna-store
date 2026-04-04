@@ -22,6 +22,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 💙 Wishlist Page
 * 🔎 About Page
 * 📞 Contact Page
+* 👤 Account Page
 
 ---
 
