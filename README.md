@@ -21,6 +21,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * ⏳ Skeleton Products
 * 💙 Wishlist Page
 * 🔎 About Page
+* 📞 Contact Page
 
 ---
 
