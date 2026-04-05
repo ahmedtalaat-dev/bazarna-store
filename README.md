@@ -54,7 +54,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/bazarna-store.git
+git clone https://github.com/ahmedtalaat-dev/bazarna-store.git
 ```
 
 ### 2. Install dependencies
