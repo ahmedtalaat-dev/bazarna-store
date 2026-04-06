@@ -24,6 +24,7 @@ The project focuses on delivering a smooth, fast, and engaging shopping experien
 * 📞 Contact Page
 * 👤 Account Page
 * 📦 Order Tracking System
+* 🧠 SEO Optimization with Dynamic Metadata
 
 ---
 
