@@ -46,4 +46,4 @@ The website contains the following pages:
 ---
 
 ## 💡 Developer
-Ahmed Tallat – Front End web developer
+Ahmed Talaat – Front End web developer
