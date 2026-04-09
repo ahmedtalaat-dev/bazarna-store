@@ -1,179 +1,231 @@
-'use client';
+"use client";
 
-// Imports
-import { ProductCard } from '@/components/product/product-card';
-import { ProductFilters } from '@/components/product/product-filters';
-import { useSearchParams } from 'next/navigation';
-import { useState, useMemo, useEffect, Suspense } from 'react';
-import { getProducts } from '@/lib/api';
-import { type Product } from '@/data/products';
+import { useMemo, useCallback, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ProductCard } from "@/components/product/product-card";
+import { ProductFilters } from "@/components/product/product-filters";
+import { getProducts } from "@/lib/api";
+import ProductSkeleton from "@/components/product/ProductSkeleton";
+import { type Product } from "@/data/products";
 
-// Handle search Component
 export default function SearchResultsPageContent() {
-  // Get query from URL
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const query = searchParams.get('q')?.toLowerCase() || '';
 
-  // States
   const [products, setProducts] = useState<Product[]>([]);
-  const [filters, setFilters] = useState<any>({});
-  const [sortBy, setSortBy] = useState('newest');
   const [loading, setLoading] = useState(true);
 
-  // Fetch products from API
+  // 🔍 Get search query from URL
+  const query = searchParams.get("q") || "";
+
+  // Fetch data
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await getProducts();
         setProducts(data);
       } catch (error) {
-        console.error('Failed to fetch products', error);
+        console.error(error);
       } finally {
         setLoading(false);
       }
     }
-
     fetchData();
   }, []);
 
-  // Filter, search, and sort products
-  const searchResults = useMemo(() => {
-    let result = [...products].filter((product) =>
-      product.title.toLowerCase().includes(query) ||
-      product.description.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query)
-    );
+  // URL params
+  const sortBy = searchParams.get("sort") || "newest";
+  const category = searchParams.get("category");
+  const rating = searchParams.get("rating");
+  const minPrice = searchParams.get("minPrice");
+  const maxPrice = searchParams.get("maxPrice");
+  const page = Number(searchParams.get("page")) || 1;
 
-    // Filter by category
-    if (filters.category) {
-      result = result.filter((p) => p.category === filters.category);
-    }
+  const itemsPerPage = 9;
 
-    // Filter by price range
-    if (filters.priceRange) {
-      result = result.filter(
-        (p) =>
-          p.price >= filters.priceRange[0] &&
-          p.price <= filters.priceRange[1]
+  // Update URL
+  const updateParam = useCallback(
+    (key: string, value: any) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (!value) {
+        params.delete(key);
+      } else {
+        params.set(key, value.toString());
+      }
+
+      router.push(`/search?${params.toString()}`);
+    },
+    [router, searchParams]
+  );
+
+  // 🔍 Filter + Search + Sort
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    // search
+    if (query) {
+      result = result.filter((item) =>
+        item.title.toLowerCase().includes(query.toLowerCase())
       );
     }
 
-    // Filter by rating
-    if (filters.rating) {
-      result = result.filter((p) => p.rating >= filters.rating);
-    }
+    // filters
+    if (category) result = result.filter((i) => i.category === category);
+    if (rating) result = result.filter((i) => i.rating >= Number(rating));
+    if (minPrice) result = result.filter((i) => i.price >= Number(minPrice));
+    if (maxPrice) result = result.filter((i) => i.price <= Number(maxPrice));
 
-    // Sort products based on selected option
+    // sort
     switch (sortBy) {
-      case 'price-low':
+      case "price-low":
         result.sort((a, b) => a.price - b.price);
         break;
-      case 'price-high':
+      case "price-high":
         result.sort((a, b) => b.price - a.price);
         break;
-      case 'best-selling':
+      case "best-selling":
         result.sort((a, b) => b.reviews.length - a.reviews.length);
         break;
       default:
-        break;
+        result.sort((a, b) => b.rating - a.rating);
     }
 
     return result;
-  }, [products, query, filters, sortBy]);
+  }, [products, query, category, rating, sortBy, minPrice, maxPrice]);
 
-  // Show loading state while fetching data
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading products...
-      </div>
-    );
-  }
+  // 📄 Pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIdx = (page - 1) * itemsPerPage;
+  const paginatedProducts = filteredProducts.slice(
+    startIdx,
+    startIdx + itemsPerPage
+  );
+
+  // Filters handler
+  const handleFilterChange = useCallback(
+    (newFilters: any) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      Object.entries(newFilters).forEach(([key, value]) => {
+        if (key === "priceRange" && Array.isArray(value)) {
+          params.set("minPrice", value[0].toString());
+          params.set("maxPrice", value[1].toString());
+        } else if (!value) {
+          params.delete(key);
+        } else {
+          params.set(key, value.toString());
+        }
+      });
+
+      params.set("page", "1");
+      router.push(`/search?${params.toString()}`);
+    },
+    [router, searchParams]
+  );
+
+  const handleResetFilters = useCallback(() => {
+    router.push("/search");
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-white">
+
       {/* Header */}
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <h1 className="text-4xl font-bold text-blue-600 mb-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
             Search Results
           </h1>
           <p className="text-gray-600">
-            {query ? (
-              <>
-                Found {searchResults.length} result
-                {searchResults.length !== 1 ? 's' : ''} for{' '}
-                <span className="font-semibold text-blue-600">
-                  "{query}"
-                </span>
-              </>
-            ) : (
-              <span>Enter a search term to find products</span>
-            )}
+            {filteredProducts.length} results for "{query}"
           </p>
         </div>
       </section>
 
-      {/* Main content */}
+      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="flex gap-8">
+        <div className="flex flex-col-reverse md:flex-row gap-8">
 
-          {/* Products results section */}
+          {/* Products */}
           <div className="flex-1">
 
-            {/* Top bar with results count and sorting */}
-            <div className="flex items-center justify-between gap-4 mb-8 pb-6 border-b">
-              <div className="text-sm text-gray-600">
-                {searchResults.length} product
-                {searchResults.length !== 1 ? 's' : ''} found
-              </div>
-
-              {/* Sort dropdown */}
-              <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-gray-600">
-                  Sort by:
-                </label>
-                <select
-                  title="Sort by"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-4 py-2 border rounded-lg bg-white text-sm font-medium text-blue-600"
-                >
-                  <option value="newest">Newest</option>
-                  <option value="best-selling">Best Selling</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                </select>
-              </div>
+            {/* Sort */}
+            <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-6">
+              <select
+                value={sortBy}
+                onChange={(e) => updateParam("sort", e.target.value)}
+                className="px-4 py-2 border rounded-lg"
+              >
+                <option value="newest">Newest</option>
+                <option value="best-selling">Best Selling</option>
+                <option value="price-low">Price Low</option>
+                <option value="price-high">Price High</option>
+              </select>
             </div>
 
-            {/* Products grid or empty state */}
-            {searchResults.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {searchResults.map((product) => (
+            {/* Grid */}
+            {loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: itemsPerPage }).map((_, i) => (
+                  <ProductSkeleton key={i} />
+                ))}
+              </div>
+            ) : paginatedProducts.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {paginatedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <div className="text-center py-20">
-                <h2 className="text-2xl font-bold text-blue-600 mb-4">
-                  No products found
-                </h2>
-                <p className="text-gray-600 mb-8">
-                  {query
-                    ? `We couldn't find anything for "${query}"`
-                    : 'Start typing to search products'}
-                </p>
-              </div>
+              <p className="text-center py-10">No products found</p>
             )}
+
+            {/* Pagination */}
+            <div className="flex justify-center gap-2 mt-10 flex-wrap">
+              <button
+                onClick={() => updateParam("page", page - 1)}
+                disabled={page === 1}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Prev
+              </button>
+
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => updateParam("page", i + 1)}
+                  className={`px-3 py-1 border rounded ${
+                    page === i + 1 ? "bg-blue-500 text-white" : ""
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => updateParam("page", page + 1)}
+                disabled={page === totalPages}
+                className="px-4 py-2 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
           </div>
 
-          {/* Sidebar filters */}
-          <aside className="w-full md:w-64 flex-shrink-0">
+          {/* Filters */}
+          <aside className="w-full md:w-64">
             <ProductFilters
-              onFilterChange={setFilters}
-              currentFilters={filters}
-              onReset={() => setFilters({})}
+              onFilterChange={handleFilterChange}
+              currentFilters={{
+                category: category || undefined,
+                rating: rating ? Number(rating) : undefined,
+                priceRange:
+                  minPrice || maxPrice
+                    ? [Number(minPrice || 0), Number(maxPrice || 2000)]
+                    : undefined,
+              }}
+              onReset={handleResetFilters}
             />
           </aside>
 

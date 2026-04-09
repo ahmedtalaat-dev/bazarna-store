@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Award} from "lucide-react";
+import { Award, Mail} from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -119,34 +119,34 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li>
                 <Link
-                  href="/shop?category=Electronics"
+                  href="/shop?category=beauty"
                   className="hover:text-white transition-colors"
                 >
-                  Electronics
+                  Beauty
                 </Link>
               </li>
 
               <li>
                 <Link
-                  href="/shop?category=Computers"
+                  href="/shop?category=fragrances"
                   className="hover:text-white transition-colors"
                 >
-                  Computers
+                  Fragrances
                 </Link>
               </li>
 
               <li>
                 <Link
-                  href="/shop?category=Accessories"
+                  href="/shop?category=groceries"
                   className="hover:text-white transition-colors"
                 >
-                  Accessories
+                  Groceries
                 </Link>
               </li>
 
               <li>
                 <Link
-                  href="/shop?category=Furniture"
+                  href="/shop?category=furniture"
                   className="hover:text-white transition-colors"
                 >
                   Furniture
@@ -204,38 +204,34 @@ export function Footer() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Social Icons */}
             <div className="flex items-center gap-6">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+              <span
+                className="text-gray-400 transition-colors"
               >
                 <Award className="w-5 h-5" />
-              </a>
+              </span>
 
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+              <span
+                className="text-gray-400 transition-colors"
               >
                 <Award className="w-5 h-5" />
-              </a>
+              </span>
 
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+              <span
+                className="text-gray-400 transition-colors"
               >
                 <Award className="w-5 h-5" />
-              </a>
+              </span>
 
-              <a
-                href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+              <span
+                className="text-gray-400 transition-colors"
               >
                 <Award className="w-5 h-5" />
-              </a>
+              </span>
             </div>
 
             {/* Email */}
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <Award className="w-4 h-4" />
+              <Mail className="w-4 h-4" />
               <span>support@bazarna.com</span>
             </div>
           </div>
@@ -245,7 +241,7 @@ export function Footer() {
             <p>© {new Date().getFullYear()} Bazarna. All rights reserved.</p>
 
             <p className="flex items-center justify-center gap-1">
-              Made with 💙 by Ahmed Talaat
+              Made with 🤍 by Ahmed Talaat
             </p>
           </div>
         </div>

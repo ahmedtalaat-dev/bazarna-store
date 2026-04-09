@@ -1,5 +1,6 @@
 "use client";
 
+// Imports
 import { useMemo, useCallback, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product/product-card";
@@ -7,7 +8,6 @@ import { ProductFilters } from "@/components/product/product-filters";
 import { getProducts } from "@/lib/api";
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 import { type Product } from "@/data/products";
-import { Suspense } from "react";
 
 export default function ShopPageContent() {
   const router = useRouter();
