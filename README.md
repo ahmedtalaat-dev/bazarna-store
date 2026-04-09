@@ -42,6 +42,7 @@ The website contains the following pages:
 - Order tracking page.
 - SEO-friendly metadata and Open Graph tags.
 - Clean and reusable components for scalability.
+- Dynamic Metadata & SEO.
 
 ---
 
