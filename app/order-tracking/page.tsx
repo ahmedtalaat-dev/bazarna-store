@@ -1,5 +1,5 @@
 // Imports
-import OrderTrackingPageContent from '@/components/OrderTrackingPageContent';
+import OrderTrackingPageContent from '@/components/pages/OrderTrackingPageContent';
 import type { Metadata } from 'next';
 
 // Metadata

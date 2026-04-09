@@ -1,5 +1,5 @@
 // Imports
-import ShopPageContent from "@/components/ShopPageContent";
+import ShopPageContent from "@/components/pages/ShopPageContent";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     siteName: "Bazarna",
     images: [
       {
-        url: "/og/shop.png",
+        url: "/og/image.png",
         width: 1200,
         height: 630,
         alt: "Bazarna Shop - Tech Products",
@@ -42,18 +42,15 @@ export const metadata: Metadata = {
     title: "Bazarna | Shop Tech Products Online",
     description:
       "Browse and shop the latest tech products at Bazarna. Find best sellers, filter by category, price, and rating, and enjoy a seamless online shopping experience.",
-    images: ["/og/shop.png"],
+    images: ["/og/image.png"],
   },
 };
 
-// Shop Page 
+// Shop Page
 export default function ShopPage() {
   return (
-      <Suspense fallback={<p className="text-center py-10">Loading...</p>}>
+    <Suspense fallback={<p className="text-center py-10">Loading...</p>}>
       <ShopPageContent />
     </Suspense>
   );
 }
-
-
-

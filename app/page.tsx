@@ -1,10 +1,10 @@
 // Imports
-import { Hero } from "@/components/Hero";
-import { BestSellers } from "@/components/BestSellers";
-import { ShopByCategory } from "@/components/ShopByCategory";
-import { ChooseUs } from "@/components/ChooseUs";
-import { Testimonials } from "@/components/Testimonials";
-import { CTASection } from "@/components/CTASection";
+import { Hero } from "@/components/sections/Hero";
+import { BestSellers } from "@/components/product/BestSellers";
+import { ShopByCategory } from "@/components/product/ShopByCategory";
+import { ChooseUs } from "@/components/sections/ChooseUs";
+import { Testimonials } from "@/components/sections/Testimonials";
+import { CTASection } from "@/components/sections/CTASection";
 import type { Metadata } from "next";
 
 // Metadata

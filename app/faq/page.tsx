@@ -1,5 +1,5 @@
 // Imports
-import FAQPageContent from "@/components/FaqPageContent";
+import FAQPageContent from "@/components/pages/FaqPageContent";
 import type { Metadata } from "next";
 
 // Metadata

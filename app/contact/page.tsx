@@ -1,5 +1,5 @@
 // Imports
-import ContactPageContent from "@/components/ContactPageContent";
+import ContactPageContent from "@/components/pages/ContactPageContent";
 import type { Metadata } from "next";
 
 // Metadata

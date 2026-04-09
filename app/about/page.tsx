@@ -1,8 +1,17 @@
 // Imports
-import Stat from "@/components/Stat";
+import Stat from "@/components/sections/Stat";
 import { Award, Users, Zap, Shield } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { LucideIcon } from "lucide-react";
+import { CTASection } from "@/components/sections/CTASection";
+
+// Interfaces
+interface Values {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}
 
 // Metadata
 export const metadata: Metadata = {
@@ -49,7 +58,7 @@ export const metadata: Metadata = {
 // About Page
 export default function AboutPage() {
   // Values data
-  const values = [
+  const values: Values[] = [
     {
       icon: Award,
       title: "Quality",
@@ -183,22 +192,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-blue-600 py-16">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Explore?
-          </h2>
-          <p className="text-blue-100 mb-8">
-            Discover our full range of premium products today.
-          </p>
-          <Link
-            href="/shop"
-            className="inline-block px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold transition-colors"
-          >
-            Shop Now
-          </Link>
-        </div>
-      </section>
+      <CTASection />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // Imports
 import { Suspense } from 'react';
-import SearchResults from '@/components/SearchResults';
 import type { Metadata } from 'next';
+import SearchResultsPageContent from '@/components/pages/SearchResultsPageContent';
 
 // Metadata
 export const metadata: Metadata = {
@@ -42,7 +42,7 @@ export default function SearchPage() {
         </div>
       }
     >
-      <SearchResults />
+      <SearchResultsPageContent />
     </Suspense>
   );
 }

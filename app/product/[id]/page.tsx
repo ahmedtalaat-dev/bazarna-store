@@ -1,5 +1,5 @@
 // Imports
-import ProductPageContent from "@/components/ProductPageContent";
+import ProductPageContent from "@/components/pages/ProductPageContent";
 import { getProductById } from "@/lib/api";
 import type { Metadata } from "next";
 import { cache } from "react";
