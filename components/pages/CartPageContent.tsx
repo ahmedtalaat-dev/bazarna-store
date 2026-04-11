@@ -10,7 +10,6 @@ import Link from "next/link";
 
 // Cart Page
 export default function CartPageContent() {
-  
   // Get cart data and functions from hooks
   const { cart, removeFromCart, updateCartQuantity, cartTotal, clearCart } =
     useEcommerce();
@@ -58,7 +57,7 @@ export default function CartPageContent() {
               href="/shop"
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft aria-hidden="true" className="w-4 h-4" />
               Continue Shopping
             </Link>
           </div>
@@ -68,7 +67,7 @@ export default function CartPageContent() {
             <div className="lg:col-span-2">
               {/* Cart Items Count */}
               <div className="bg-gray-50 rounded-lg p-6 mb-6">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600" aria-live="polite">
                   {cart.length} item{cart.length !== 1 ? "s" : ""} in your cart
                 </p>
               </div>
