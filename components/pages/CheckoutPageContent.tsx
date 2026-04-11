@@ -11,6 +11,14 @@ import PaymentForm from "@/components/cart-checkout/PaymentForm";
 import CheckoutOrderSummary from "@/components/cart-checkout/CheckoutOrderSummary";
 import OrderPlaced from "@/components/cart-checkout/OrderPlaced";
 
+// Interfaces
+interface FinalOrder {
+  subtotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+}
+
 export default function CheckoutPageContent() {
   // Get cart data and toast notifications
   const { cart, cartTotal, clearCart } = useEcommerce();
@@ -20,6 +28,7 @@ export default function CheckoutPageContent() {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [finalOrder, setFinalOrder] = useState<FinalOrder | null>(null);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -81,6 +90,12 @@ export default function CheckoutPageContent() {
 
     // Simulate payment processing
     setTimeout(() => {
+      setFinalOrder({
+    subtotal,
+    shipping,
+    tax,
+    total,
+  });
       clearCart();
       setOrderPlaced(true);
       setIsProcessing(false);
@@ -103,7 +118,7 @@ export default function CheckoutPageContent() {
             href="/shop"
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft aria-hidden="true" className="w-4 h-4" />
             Back to Shop
           </Link>
         </div>
@@ -112,14 +127,14 @@ export default function CheckoutPageContent() {
   }
 
   // Show order confirmation page
-  if (orderPlaced) {
+  if (orderPlaced && finalOrder) {
     return (
       <OrderPlaced
-        subtotal={subtotal}
-        shipping={shipping}
-        tax={tax}
-        total={total}
-      />
+      subtotal={finalOrder.subtotal}
+      shipping={finalOrder.shipping}
+      tax={finalOrder.tax}
+      total={finalOrder.total}
+    />
     );
   }
 
@@ -163,6 +178,7 @@ export default function CheckoutPageContent() {
               <button
                 type="submit"
                 disabled={isProcessing}
+                aria-busy="true"
                 className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-bold text-lg transition-colors"
               >
                 {isProcessing ? "Processing..." : "Place Order"}
