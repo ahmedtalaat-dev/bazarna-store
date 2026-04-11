@@ -65,7 +65,7 @@ export default function FAQPageContent() {
       id: "support",
       question: "How can I contact customer support?",
       answer:
-        "You can reach us via email at support@Bazarna.com, phone at +1 (555) 123-4567, or through our contact form. We are available 24/7.",
+        "You can reach us via email at support@bazarna.com, phone at +20 1104894017, or through our contact form. We are available 24/7.",
     },
   ];
 
@@ -100,7 +100,9 @@ export default function FAQPageContent() {
             >
               {/* Question button */}
               <button
-                onClick={() => toggleItem(faq.id)} // toggle open
+                onClick={() => toggleItem(faq.id)}
+                aria-expanded={openItems[faq.id]}
+                aria-controls={`faq-${faq.id}`}
                 className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors text-left"
               >
                 <span className="text-lg font-semibold text-blue-600">
@@ -109,6 +111,7 @@ export default function FAQPageContent() {
 
                 {/* Icon */}
                 <ChevronDown
+                  aria-hidden="true"
                   className={`w-5 h-5 text-gray-600 transition-transform ${
                     openItems[faq.id] ? "rotate-180" : ""
                   }`}
