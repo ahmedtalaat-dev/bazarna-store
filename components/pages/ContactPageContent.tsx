@@ -60,7 +60,10 @@ export default function ContactPageContent() {
           <div className="space-y-8">
             {/* Email */}
             <div className="flex gap-4">
-              <Mail className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <Mail
+                aria-hidden="true"
+                className="w-6 h-6 text-blue-600 flex-shrink-0"
+              />
               <div>
                 <h3 className="font-semibold text-blue-600 mb-1">Email</h3>
                 <p className="text-gray-600">support@bazarna.com</p>
@@ -70,7 +73,10 @@ export default function ContactPageContent() {
 
             {/* Phone */}
             <div className="flex gap-4">
-              <Phone className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <Phone
+                aria-hidden="true"
+                className="w-6 h-6 text-blue-600 flex-shrink-0"
+              />
               <div>
                 <h3 className="font-semibold text-blue-600 mb-1">Phone</h3>
                 <p className="text-gray-600">+20 1104894017</p>
@@ -82,7 +88,10 @@ export default function ContactPageContent() {
 
             {/* Address */}
             <div className="flex gap-4">
-              <MapPin className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <MapPin
+                aria-hidden="true"
+                className="w-6 h-6 text-blue-600 flex-shrink-0"
+              />
               <div>
                 <h3 className="font-semibold text-blue-600 mb-1">Address</h3>
                 <p className="text-gray-600">123 AL-SALAM Street</p>
@@ -92,7 +101,10 @@ export default function ContactPageContent() {
 
             {/* Working hours */}
             <div className="flex gap-4">
-              <Clock className="w-6 h-6 text-blue-600 flex-shrink-0" />
+              <Clock
+                aria-hidden="true"
+                className="w-6 h-6 text-blue-600 flex-shrink-0"
+              />
               <div>
                 <h3 className="font-semibold text-blue-600 mb-1">Hours</h3>
                 <p className="text-gray-600">
@@ -112,6 +124,7 @@ export default function ContactPageContent() {
                   type="text"
                   name="name"
                   placeholder="Your Name"
+                  aria-label="Name"
                   value={formData.name}
                   onChange={handleChange}
                   className="px-4 py-3 border rounded-lg ring-gray-500 outline-none ring-2 focus:ring-blue-500"
@@ -121,6 +134,7 @@ export default function ContactPageContent() {
                   type="email"
                   name="email"
                   placeholder="Your Email"
+                  aria-label="Email"
                   value={formData.email}
                   onChange={handleChange}
                   className="px-4 py-3 border rounded-lg ring-gray-500 outline-none ring-2 focus:ring-blue-500"
@@ -133,6 +147,7 @@ export default function ContactPageContent() {
                 type="text"
                 name="subject"
                 placeholder="Subject"
+                aria-label="Subject"
                 value={formData.subject}
                 onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg ring-gray-500 outline-none ring-2 focus:ring-blue-500"
@@ -143,6 +158,7 @@ export default function ContactPageContent() {
               <textarea
                 name="message"
                 placeholder="Your Message"
+                aria-label="Your Message"
                 value={formData.message}
                 onChange={handleChange}
                 rows={6}
