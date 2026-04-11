@@ -94,6 +94,7 @@ export default function AccountPageContent() {
             <div className="space-y-2">
               {/* Profile Information Tab Button */}
               <button
+                role="tab"
                 onClick={() => setActiveTab("profile")}
                 className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
                   activeTab === "profile"
@@ -105,6 +106,7 @@ export default function AccountPageContent() {
               </button>
               {/* Order History Tab Button */}
               <button
+                role="tab"
                 onClick={() => setActiveTab("orders")}
                 className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
                   activeTab === "orders"
@@ -116,6 +118,7 @@ export default function AccountPageContent() {
               </button>
               {/* Saved Addresses Tab Button */}
               <button
+                role="tab"
                 onClick={() => setActiveTab("addresses")}
                 className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
                   activeTab === "addresses"
@@ -239,10 +242,16 @@ export default function AccountPageContent() {
                         )}
                       </div>
                       <div className="flex gap-4 text-sm">
-                        <button aria-label="Edit address" className="text-blue-600 hover:text-blue-700 font-medium">
+                        <button
+                          aria-label="Edit address"
+                          className="text-blue-600 hover:text-blue-700 font-medium"
+                        >
                           Edit
                         </button>
-                        <button aria-label="Delete address" className="text-red-600 hover:text-red-700 font-medium">
+                        <button
+                          aria-label="Delete address"
+                          className="text-red-600 hover:text-red-700 font-medium"
+                        >
                           Delete
                         </button>
                       </div>
