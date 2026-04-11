@@ -8,7 +8,9 @@ import { ProductFilters } from "@/components/product/product-filters";
 import { getProducts } from "@/lib/api";
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 import { type Product } from "@/data/products";
+import Pagination from "../ui/Pagination";
 
+// Main Page
 export default function ShopPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -16,7 +18,7 @@ export default function ShopPageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch + Transform API Data
+  // Fetch Data
   useEffect(() => {
     async function fetchData() {
       try {
@@ -34,14 +36,12 @@ export default function ShopPageContent() {
   // URL Params
   const sortBy = searchParams.get("sort") || "newest";
   const category = searchParams.get("category");
-  const color = searchParams.get("color");
   const rating = searchParams.get("rating");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
   const page = Number(searchParams.get("page")) || 1;
   const viewMode = searchParams.get("view") || "grid";
-
-  const itemsPerPage = 12;
+  const itemsPerPage = 9;
 
   // Update URL Params
   const updateParam = useCallback(
@@ -81,7 +81,7 @@ export default function ShopPageContent() {
         result.sort((a, b) => b.rating - a.rating);
     }
     return result;
-  }, [products, category, color, rating, sortBy, minPrice, maxPrice]);
+  }, [products, category, rating, sortBy, minPrice, maxPrice]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -109,6 +109,7 @@ export default function ShopPageContent() {
     [router, searchParams],
   );
 
+  // Reset filters
   const handleResetFilters = useCallback(() => {
     router.push("/shop");
   }, [router]);
@@ -176,35 +177,11 @@ export default function ShopPageContent() {
             )}
 
             {/* Pagination */}
-            <div className="flex justify-center gap-2 mt-10">
-              <button
-                onClick={() => updateParam("page", page - 1)}
-                disabled={page === 1}
-                className="px-4 py-2 border rounded"
-              >
-                Prev
-              </button>
-
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => updateParam("page", i + 1)}
-                  className={`px-3 py-1 border ${
-                    page === i + 1 ? "bg-blue-500 text-white" : ""
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-
-              <button
-                onClick={() => updateParam("page", page + 1)}
-                disabled={page === totalPages}
-                className="px-4 py-2 border rounded"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => updateParam("page", newPage)}
+            />
           </div>
 
           {/* Filters */}
@@ -213,7 +190,6 @@ export default function ShopPageContent() {
               onFilterChange={handleFilterChange}
               currentFilters={{
                 category: category || undefined,
-                color: color || undefined,
                 rating: rating ? Number(rating) : undefined,
                 priceRange:
                   minPrice || maxPrice

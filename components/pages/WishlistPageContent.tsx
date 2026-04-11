@@ -8,6 +8,7 @@ import { type Product } from "@/data/products";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useState, useMemo } from "react";
+import Pagination from "../ui/Pagination";
 
 // Wishlist Page
 export default function WishlistPageContent() {
@@ -43,7 +44,6 @@ export default function WishlistPageContent() {
     [wishlist, startIdx, endIdx],
   );
 
-  // Wishlist Page
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -159,34 +159,11 @@ export default function WishlistPageContent() {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center gap-2 mt-10">
-              <button
-                onClick={() => setPage(page - 1)} // Previous page
-                disabled={page === 1}
-                className="px-4 py-2 border rounded"
-              >
-                Prev
-              </button>
-
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setPage(i + 1)} // Jump to page
-                  className={`px-3 py-1 border ${page === i + 1 ? "bg-blue-500 text-white" : ""}`}
-                  aria-current={page === i + 1 ? "page" : undefined} // Accessibility for current page
-                >
-                  {i + 1}
-                </button>
-              ))}
-
-              <button
-                onClick={() => setPage(page + 1)}
-                disabled={page === totalPages}
-                className="px-4 py-2 border rounded"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => setPage(newPage)}
+            />
           </div>
         )}
       </div>

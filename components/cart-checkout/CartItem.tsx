@@ -29,7 +29,7 @@ export default function CartItem({
           src={
             item.product.images?.[0] || item.product.thumbnail || fallbackImage
           }
-          alt={item.product.title}
+          alt={item.product.title || "Product image"}
           width={100}
           height={100}
           className="w-full h-full object-cover"

@@ -31,7 +31,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
     <div className="space-y-4">
       {/* Main Image */}
       <div
-        className="relative bg-gray-100 aspect-square rounded-lg overflow-hidden group"
+        className="relative bg-gray-100 rounded-lg overflow-hidden group"
         onMouseEnter={() => setIsZoomed(true)}
         onMouseLeave={() => setIsZoomed(false)}
       >
@@ -40,7 +40,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
           alt={productName || "Product image"}
           width={600}
           height={600}
-          className={`w-full h-full object-cover transition-transform duration-300 ${
+          className={`w-full h-95 object-cover transition-transform duration-300 ${
             isZoomed ? "scale-150" : "scale-100"
           }`}
         />

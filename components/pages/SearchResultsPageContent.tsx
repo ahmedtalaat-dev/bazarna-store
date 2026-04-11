@@ -1,5 +1,6 @@
 "use client";
 
+// Imports
 import { useMemo, useCallback, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product/product-card";
@@ -7,15 +8,18 @@ import { ProductFilters } from "@/components/product/product-filters";
 import { getProducts } from "@/lib/api";
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 import { type Product } from "@/data/products";
+import Pagination from "../ui/Pagination";
 
+// Main Page
 export default function SearchResultsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // States
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔍 Get search query from URL
+  // Get search query from URL
   const query = searchParams.get("q") || "";
 
   // Fetch data
@@ -40,7 +44,6 @@ export default function SearchResultsPageContent() {
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
   const page = Number(searchParams.get("page")) || 1;
-
   const itemsPerPage = 9;
 
   // Update URL
@@ -56,17 +59,17 @@ export default function SearchResultsPageContent() {
 
       router.push(`/search?${params.toString()}`);
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
-  // 🔍 Filter + Search + Sort
+  // Filter + Search + Sort
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
     // search
     if (query) {
       result = result.filter((item) =>
-        item.title.toLowerCase().includes(query.toLowerCase())
+        item.title.toLowerCase().includes(query.toLowerCase()),
       );
     }
 
@@ -94,12 +97,12 @@ export default function SearchResultsPageContent() {
     return result;
   }, [products, query, category, rating, sortBy, minPrice, maxPrice]);
 
-  // 📄 Pagination
+  // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const startIdx = (page - 1) * itemsPerPage;
   const paginatedProducts = filteredProducts.slice(
     startIdx,
-    startIdx + itemsPerPage
+    startIdx + itemsPerPage,
   );
 
   // Filters handler
@@ -121,16 +124,16 @@ export default function SearchResultsPageContent() {
       params.set("page", "1");
       router.push(`/search?${params.toString()}`);
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
+  // Reset filters
   const handleResetFilters = useCallback(() => {
     router.push("/search");
   }, [router]);
 
   return (
     <div className="min-h-screen bg-white">
-
       {/* Header */}
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
@@ -146,10 +149,8 @@ export default function SearchResultsPageContent() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col-reverse md:flex-row gap-8">
-
           {/* Products */}
           <div className="flex-1">
-
             {/* Sort */}
             <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-6">
               <select
@@ -182,35 +183,11 @@ export default function SearchResultsPageContent() {
             )}
 
             {/* Pagination */}
-            <div className="flex justify-center gap-2 mt-10 flex-wrap">
-              <button
-                onClick={() => updateParam("page", page - 1)}
-                disabled={page === 1}
-                className="px-4 py-2 border rounded disabled:opacity-50"
-              >
-                Prev
-              </button>
-
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => updateParam("page", i + 1)}
-                  className={`px-3 py-1 border rounded ${
-                    page === i + 1 ? "bg-blue-500 text-white" : ""
-                  }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-
-              <button
-                onClick={() => updateParam("page", page + 1)}
-                disabled={page === totalPages}
-                className="px-4 py-2 border rounded disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => updateParam("page", newPage)}
+            />
           </div>
 
           {/* Filters */}
@@ -228,7 +205,6 @@ export default function SearchResultsPageContent() {
               onReset={handleResetFilters}
             />
           </aside>
-
         </div>
       </div>
     </div>

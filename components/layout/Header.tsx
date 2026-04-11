@@ -38,7 +38,6 @@ export function Header() {
 
     router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
 
-    setSearchQuery("");
     setSearchToastOpen(false);
     setIsMenuOpen(false);
   };
