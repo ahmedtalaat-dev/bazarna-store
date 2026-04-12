@@ -1,12 +1,11 @@
 "use client";
 
+// Imports
 import Link from "next/link";
 import Image from "next/image";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-
 import { Heart, ShoppingCart, User, Menu, X, Search } from "lucide-react";
-
 import { SearchToast } from "@/components/ui/SearchToast";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 
@@ -80,6 +79,7 @@ export function Header() {
                 <input
                   type="text"
                   placeholder="Search products..."
+                  aria-label="Search products"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="flex-1 bg-transparent outline-none text-sm"
@@ -99,6 +99,7 @@ export function Header() {
               {/* Mobile Search */}
               <button
                 onClick={() => setSearchToastOpen(true)}
+                aria-label="Open search"
                 className="md:hidden text-gray-600 hover:text-blue-600"
               >
                 <Search className="w-5 h-5" />
@@ -107,6 +108,7 @@ export function Header() {
               {/* Wishlist */}
               <Link
                 href="/wishlist"
+                aria-label="Open wishlist page"
                 className="relative text-gray-600 hover:text-blue-600"
               >
                 <Heart className="w-5 h-5" />
@@ -121,6 +123,7 @@ export function Header() {
               {/* Cart */}
               <Link
                 href="/cart"
+                aria-label="Open cart page"
                 className="relative text-gray-600 hover:text-blue-600"
               >
                 <ShoppingCart className="w-5 h-5" />
@@ -135,6 +138,7 @@ export function Header() {
               {/* Account */}
               <Link
                 href="/account"
+                aria-label="Open account page"
                 className="text-gray-600 hover:text-blue-600"
               >
                 <User className="w-5 h-5" />
@@ -143,6 +147,7 @@ export function Header() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Toggle menu"
                 className="md:hidden text-gray-600 hover:text-blue-600"
               >
                 {isMenuOpen ? (
@@ -175,6 +180,7 @@ export function Header() {
                   <input
                     type="text"
                     placeholder="Search products..."
+                    aria-label="Search products"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="flex-1 bg-transparent outline-none text-sm"
@@ -182,6 +188,7 @@ export function Header() {
 
                   <button
                     type="submit"
+                    aria-label="Open search"
                     className="text-gray-600 hover:text-blue-600"
                   >
                     <Search className="w-4 h-4" />
