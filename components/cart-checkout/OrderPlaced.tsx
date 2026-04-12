@@ -1,3 +1,4 @@
+// Imports
 import Link from "next/link";
 import { Check } from "lucide-react";
 
@@ -9,7 +10,7 @@ interface OrderPlacedProps {
   total: number;
 }
 
-// Main component
+// Main Page
 export default function OrderPlaced({
   subtotal,
   shipping,
@@ -23,7 +24,7 @@ export default function OrderPlaced({
 
         {/* Success icon */}
         <div className="w-16 h-16 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
-          <Check className="w-8 h-8 text-green-600" />
+          <Check aria-hidden="true" className="w-8 h-8 text-green-600" />
         </div>
 
         {/* Title */}
