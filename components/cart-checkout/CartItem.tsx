@@ -10,6 +10,7 @@ interface CartItemProps {
   handleRemove: (productId: string) => void;
 }
 
+// Main Page
 export default function CartItem({
   item,
   handleQuantityChange,
@@ -44,10 +45,6 @@ export default function CartItem({
         >
           {item.product.title}
         </Link>
-        <div className="flex flex-wrap gap-2 mt-2 text-sm text-gray-600">
-          {item.color && <span>Color: {item.color}</span>}
-          {item.size && <span>Size: {item.size}</span>}
-        </div>
         <p className="text-sm text-gray-500 mt-1">${item.product.price}</p>
       </div>
 
@@ -59,30 +56,42 @@ export default function CartItem({
 
         {/* Quantity Controls */}
         <div className="flex items-center gap-2 border rounded-lg p-1">
+          {/* Decrease quantity button */}
           <button
             onClick={() =>
               handleQuantityChange(item.product.id, item.quantity - 1)
             }
-            disabled={item.quantity === 1}
+            aria-label="Decrease quantity" // Accessible label for screen readers
+            disabled={item.quantity === 1} // Prevent going below 1
             className="p-1 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            <Minus className="w-4 h-4" />
+            <Minus className="w-4 h-4" /> {/* Minus icon */}
           </button>
-          <span className="w-8 text-center font-semibold">{item.quantity}</span>
+
+          {/* Quantity display */}
+          <span
+            aria-live="polite" // Notify screen readers on change
+            className="w-8 text-center font-semibold"
+          >
+            {item.quantity}
+          </span>
+
+          {/* Increase quantity button */}
           <button
             onClick={() =>
               handleQuantityChange(item.product.id, item.quantity + 1)
             }
+            aria-label="Increase quantity" // Accessible label for screen readers
             className="p-1 hover:bg-gray-100 transition-colors"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" /> {/* Plus icon */}
           </button>
         </div>
 
         {/* Remove Button */}
         <button
           onClick={() => handleRemove(item.product.id)}
-          aria-label="Remeve Product From Cart"
+          aria-label="Remove product from cart"
           className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
         >
           <Trash2 className="w-5 h-5" />
