@@ -1,5 +1,3 @@
-import React from "react";
-
 // Interface for form data
 interface CheckoutFormData {
   firstName: string;
@@ -14,15 +12,66 @@ interface CheckoutFormData {
 // Props for the component
 interface CheckoutFormProps {
   formData: CheckoutFormData;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // input handler
-  isProcessing: boolean;
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
+
+// Fields config
+const fields = [
+  {
+    name: "firstName",
+    label: "First Name",
+    type: "text",
+    colSpan: "col-span-1",
+    autoComplete: "given-name",
+  },
+  {
+    name: "lastName",
+    label: "Last Name",
+    type: "text",
+    colSpan: "col-span-1",
+    autoComplete: "family-name",
+  },
+  {
+    name: "email",
+    label: "Email Address",
+    type: "email",
+    colSpan: "col-span-2",
+    autoComplete: "email",
+  },
+  {
+    name: "phone",
+    label: "Phone Number",
+    type: "tel",
+    colSpan: "col-span-2",
+    autoComplete: "tel",
+  },
+  {
+    name: "address",
+    label: "Street Address",
+    type: "text",
+    colSpan: "col-span-2",
+    autoComplete: "address-line1",
+  },
+  {
+    name: "city",
+    label: "City",
+    type: "text",
+    colSpan: "col-span-1",
+    autoComplete: "address-level2",
+  },
+  {
+    name: "postalCode",
+    label: "Postal Code",
+    type: "text",
+    colSpan: "col-span-1",
+    autoComplete: "postal-code",
+  },
+] as const;
 
 // Main component
 export default function CheckoutForm({
   formData,
   handleInputChange,
-  isProcessing,
 }: CheckoutFormProps) {
   return (
     <section className="space-y-8">
@@ -35,93 +84,26 @@ export default function CheckoutForm({
 
         {/* Inputs grid */}
         <div className="grid grid-cols-2 gap-4">
-          {/* First Name */}
-          <input
-            type="text"
-            name="firstName"
-            placeholder="First Name"
-            value={formData.firstName}
-            onChange={handleInputChange}
-            required
-            className="col-span-1 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
+          {fields.map((field) => (
+            <div key={field.name} className={field.colSpan}>
 
-          {/* Last Name */}
-          <input
-            type="text"
-            name="lastName"
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            required
-            className="col-span-1 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
-
-          {/* Email */}
-          <input
-            type="email"
-            name="email"
-            placeholder="Email Address"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-            className="col-span-2 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
-
-          {/* Phone */}
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Phone Number"
-            value={formData.phone}
-            onChange={handleInputChange}
-            required
-            className="col-span-2 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
-
-          {/* Address */}
-          <input
-            type="text"
-            name="address"
-            placeholder="Street Address"
-            value={formData.address}
-            onChange={handleInputChange}
-            required
-            className="col-span-2 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
-
-          {/* City */}
-          <input
-            type="text"
-            name="city"
-            placeholder="City"
-            value={formData.city}
-            onChange={handleInputChange}
-            required
-            className="col-span-1 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
-
-          {/* Postal Code */}
-          <input
-            type="text"
-            name="postalCode"
-            placeholder="Postal Code"
-            value={formData.postalCode}
-            onChange={handleInputChange}
-            required
-            className="col-span-1 px-4 py-3 border rounded-lg focus:outline-none ring-2 ring-gray-300 focus:ring-blue-500"
-          />
+              {/* Input */}
+              <input
+                id={field.name}
+                type={field.type}
+                name={field.name}
+                placeholder={field.label}
+                aria-label={field.label}
+                value={formData[field.name]}
+                onChange={handleInputChange}
+                autoComplete={field.autoComplete}
+                required
+                className="w-full px-4 py-3 border rounded-lg ring-gray-500 outline-none ring-2 focus:ring-blue-500"
+              />
+            </div>
+          ))}
         </div>
       </section>
-
-      {/* Submit button */}
-      <button
-        type="submit"
-        disabled={isProcessing}
-        className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-bold text-lg transition-colors"
-      >
-        {isProcessing ? "Processing..." : "Submit"} {/* dynamic text */}
-      </button>
     </section>
   );
 }
