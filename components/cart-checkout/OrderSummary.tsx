@@ -9,13 +9,13 @@ interface OrderSummaryProps {
   total: number;
 }
 
+// Main Page
 export default function OrderSummary({
   subtotal,
   shipping,
   tax,
   total,
 }: OrderSummaryProps) {
-
   return (
     <div className="lg:col-span-1">
       <div className="bg-gray-50 rounded-lg p-6 sticky top-20">
@@ -72,22 +72,6 @@ export default function OrderSummary({
         >
           Continue Shopping
         </Link>
-
-        {/* Promo Code Section */}
-        <div className="mt-6 pt-6 border-t">
-          {/* Promo Code Input */}
-          <input
-            type="text"
-            placeholder="Enter promo code"
-            className="w-full px-4 py-2 border rounded-lg text-sm mb-2 ring-2 ring-gray-300"
-          />
-          {/* Apply Promo Code Button */}
-          <button
-          aria-label="Apply promo code"
-           className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-            Apply Code
-          </button>
-        </div>
       </div>
     </div>
   );
