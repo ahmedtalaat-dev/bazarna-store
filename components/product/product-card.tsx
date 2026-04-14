@@ -4,7 +4,6 @@ import { Product } from "@/data/products";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 
@@ -18,11 +17,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } =
     useEcommerce();
   const { addToast } = useToast();
-  const [isHovered, setIsHovered] = useState(false);
 
   const inWishlist = isInWishlist(product.id);
 
-  // ✅ FIX: safe image
+  // FIX: safe image
   const imageSrc =
     product.thumbnail ||
     (product.images && product.images.length > 0 && product.images[0]) ||
@@ -48,16 +46,9 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  // const discount = product.originalPrice
-  //   ? Math.round(
-  //       ((product.originalPrice - product.price) / product.originalPrice) * 100
-  //     )
-  //   : 0;
-
   return (
     <Link href={`/product/${product.id}`}>
       <div className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
-        
         {/* Image */}
         <div className="relative overflow-hidden bg-gray-100 h-[200px]">
           <Image
@@ -78,6 +69,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Wishlist */}
           <div className="absolute top-3 right-3">
             <button
+              aria-label="Wishlist"
               onClick={handleWishlist}
               className={`p-2 rounded-full backdrop-blur-sm transition-all ${
                 inWishlist
