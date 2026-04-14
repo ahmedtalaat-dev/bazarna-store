@@ -158,7 +158,6 @@ export default function CheckoutPageContent() {
               <CheckoutForm
                 formData={formData}
                 handleInputChange={handleInputChange}
-                isProcessing={isProcessing}
               />
 
               {/* Payment Method */}
