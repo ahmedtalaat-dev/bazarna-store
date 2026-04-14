@@ -138,12 +138,14 @@ export function BestSellers() {
             {/* Slider Buttons */}
             <button
               onClick={prevSlide}
+              aria-label="Previous Product"
               className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
             >
               <ChevronLeft className="w-5 h-5 text-blue-600" />
             </button>
             <button
               onClick={nextSlide}
+              aria-label="Next Product"
               className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow hover:bg-gray-100 transition"
             >
               <ChevronRight className="w-5 h-5 text-blue-600" />
