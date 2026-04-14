@@ -87,6 +87,7 @@ export function Header() {
 
                 <button
                   type="submit"
+                  aria-label="Search products"
                   className="text-gray-600 hover:text-blue-600"
                 >
                   <Search className="w-4 h-4" />
