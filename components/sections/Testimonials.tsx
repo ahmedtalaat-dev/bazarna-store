@@ -26,7 +26,6 @@ export function Testimonials() {
               {Array.from({ length: 5 }, (_, i) => (
                 <span
                   key={i}
-                  aria-hidden="true"
                   className={`${
                     i < testimonial.rating ? "text-yellow-400" : "text-gray-300"
                   }`}
