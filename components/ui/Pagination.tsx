@@ -1,13 +1,11 @@
-"use client";
-
-import React from "react";
-
+// Pagination type
 type PaginationProps = {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 };
 
+// Main Page
 export default function Pagination({
   page,
   totalPages,

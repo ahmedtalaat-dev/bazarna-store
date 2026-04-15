@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Terms & Conditions | Bazarna",
   description:
     "Read the terms and conditions of using Bazarna, including policies, rules, and user agreements.",
+
   keywords: [
     "Bazarna",
     "terms and conditions",
@@ -13,7 +14,9 @@ export const metadata: Metadata = {
     "policies",
     "online store rules",
   ],
+
   authors: [{ name: "Ahmed Talaat" }],
+
   openGraph: {
     title: "Terms & Conditions | Bazarna",
     description:
@@ -22,7 +25,7 @@ export const metadata: Metadata = {
     siteName: "Bazarna",
     images: [
       {
-        url: "/og/terms.png",
+        url: "/og/image.png",
         width: 1200,
         height: 630,
         alt: "Bazarna Terms & Conditions",
@@ -30,12 +33,13 @@ export const metadata: Metadata = {
     ],
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "Terms & Conditions | Bazarna",
     description:
       "Learn about Bazarna's policies and user agreements for safe online shopping.",
-    images: ["/og/terms.png"],
+    images: ["/og/image.png"],
   },
 };
 

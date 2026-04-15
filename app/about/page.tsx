@@ -1,7 +1,6 @@
 // Imports
 import Stat from "@/components/sections/Stat";
 import { Award, Users, Zap, Shield } from "lucide-react";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { LucideIcon } from "lucide-react";
 import { CTASection } from "@/components/sections/CTASection";

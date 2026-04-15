@@ -1,3 +1,4 @@
+// Product interface
 export interface Product {
   id: string;
   title: string;
@@ -16,6 +17,7 @@ export interface Product {
   returnPolicy?: string;
 }
 
+// Reviews interface
 export interface Review {
   rating: number;
   comment: string;
@@ -23,15 +25,24 @@ export interface Review {
   date: string;
 }
 
-export const categories = ['All', 'Electronics', 'Computers', 'Accessories', 'Furniture', 'Storage'];
+// Testimonial interface
+interface Testimonial {
+  id: string;
+  author: string;
+  role: string;
+  text: string;
+  avatar: string;
+  rating: number;
+}
 
-export const testimonials = [
+// Testimonials data
+export const testimonials: Testimonial[] = [
   {
     id: '1',
     author: 'Ahmed Ali',
     role: 'Product Designer',
     text: 'The quality and customer service are exceptional. I have become a loyal customer.',
-    avatar: '/review 1.webp',
+    avatar: '/reviews/review 1.webp',
     rating: 5,
   },
   {
@@ -39,7 +50,7 @@ export const testimonials = [
     author: 'Omar Mohamed',
     role: 'Tech Entrepreneur',
     text: 'Best online shopping experience I have had. Fast shipping and great prices.',
-    avatar: '/review 2.webp',
+    avatar: '/reviews/review 2.webp',
     rating: 5,
   },
   {
@@ -47,7 +58,7 @@ export const testimonials = [
     author: 'Abdullah Saad',
     role: 'Content Creator',
     text: 'High quality products at competitive prices. Highly recommended!',
-    avatar: '/review 3.webp',
+    avatar: '/reviews/review 3.webp',
     rating: 4,
   },
 ];

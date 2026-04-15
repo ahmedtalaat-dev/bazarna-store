@@ -1,14 +1,17 @@
 "use client";
 
+// Imports
 import { useMotionValue, animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
+// States interface
 interface StatProps {
   value: number | string;
   suffix?: string;
   label: string;
 }
 
+// Main Page
 export default function Stat({ value, suffix = "", label }: StatProps) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true });

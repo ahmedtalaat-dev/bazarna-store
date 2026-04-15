@@ -1,6 +1,6 @@
 // Imports
-import OrderTrackingPageContent from '@/components/pages/OrderTrackingPageContent';
-import type { Metadata } from 'next';
+import OrderTrackingPageContent from "@/components/pages/OrderTrackingPageContent";
+import type { Metadata } from "next";
 
 // Metadata
 export const metadata: Metadata = {
@@ -34,6 +34,8 @@ export const metadata: Metadata = {
 // Order Tracking Page
 export default function OrderTrackingPage() {
   return (
-    <OrderTrackingPageContent />
+    <main>
+      <OrderTrackingPageContent />
+    </main>
   );
 }

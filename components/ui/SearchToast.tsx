@@ -1,8 +1,10 @@
 "use client";
 
+// Imports
 import { FormEvent } from "react";
 import { X, Search } from "lucide-react";
 
+// Search Toast type
 type SearchToastProps = {
   open: boolean;
   query: string;
@@ -11,19 +13,21 @@ type SearchToastProps = {
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 };
 
+// Quick Searches
 const quickSearches = [
-  "Laptop",
-  "Headphones",
-  "Keyboard",
-  "Mouse",
-  "Monitor",
+  "Kiwi",
+  "Chair",
+  "Oil",
+  "Bed",
+  "Food",
   "Gaming Chair",
   "Smart Watch",
-  "Tablet",
-  "Speakers",
-  "Camera",
+  "Fish",
+  "Mascara",
+  "Sofa",
 ];
 
+// Main Page
 export function SearchToast({
   open,
   query,
@@ -43,6 +47,7 @@ export function SearchToast({
 
           <button
             onClick={onClose}
+            aria-label="Close search modal"
             className="text-gray-500 hover:text-red-500 transition"
           >
             <X className="w-6 h-6" />

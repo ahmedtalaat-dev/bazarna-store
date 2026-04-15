@@ -5,10 +5,19 @@ import type { Metadata } from "next";
 // Metadata
 export const metadata: Metadata = {
   title: "My Cart | Bazarna",
-  description: "Manage your Cart.",
+  description: "Review and manage items in your shopping cart before checkout.",
+
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 // Cart Page
 export default function CartPage() {
-  return <CartPageContent />;
+  return (
+    <main>
+      <CartPageContent />
+    </main>
+  );
 }

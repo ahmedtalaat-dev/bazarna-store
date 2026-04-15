@@ -1,16 +1,8 @@
+// Imports
 import Image from "next/image";
 import { testimonials } from "@/data/products";
 
-// Testimonial Interface 
-interface Testimonial {
-  id: string;
-  author: string;
-  role: string;
-  text: string;
-  avatar: string;
-  rating: number;
-}
-
+// Main Page
 export function Testimonials() {
   return (
     <section className="max-w-7xl mx-auto px-4 py-16">
@@ -21,16 +13,20 @@ export function Testimonials() {
 
       {/* Testimonials Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {testimonials.map((testimonial: Testimonial) => (
+        {testimonials.map((testimonial) => (
           <div
             key={testimonial.id}
             className="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
           >
             {/* Star Rating */}
-            <div className="flex gap-1 mb-4">
+            <div
+              aria-label={`Rating: ${testimonial.rating} out of 5`}
+              className="flex gap-1 mb-4"
+            >
               {Array.from({ length: 5 }, (_, i) => (
                 <span
                   key={i}
+                  aria-hidden="true"
                   className={`${
                     i < testimonial.rating ? "text-yellow-400" : "text-gray-300"
                   }`}
@@ -50,12 +46,15 @@ export function Testimonials() {
               <Image
                 src={testimonial.avatar}
                 alt={testimonial.author}
+                loading="lazy"
                 width={40}
                 height={40}
                 className="w-10 h-10 rounded-full object-cover"
               />
               <div>
-                <p className="font-semibold text-blue-600">{testimonial.author}</p>
+                <p className="font-semibold text-blue-600">
+                  {testimonial.author}
+                </p>
                 <p className="text-sm text-gray-600">{testimonial.role}</p>
               </div>
             </div>

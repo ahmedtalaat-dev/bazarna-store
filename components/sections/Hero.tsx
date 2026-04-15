@@ -1,54 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+// Imports
 import Link from "next/link";
-import {
-  ArrowRight,
-  Zap,
-  Truck,
-  Shield,
-  Award,
-  type LucideIcon,
-} from "lucide-react";
-import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
-// Feature type definition
-interface Feature {
-  title: string;
-  caption: string;
-  icon: LucideIcon;
-}
-
-const brands = [
-  { name: "Nike", logo: "/brands/nike.webp" },
-  { name: "Adidas", logo: "/brands/adidas.webp" },
-  { name: "Apple", logo: "/brands/apple.webp" },
-  { name: "Samsung", logo: "/brands/samsung.webp" },
-  { name: "Puma", logo: "/brands/puma.webp" },
-  { name: "Zara", logo: "/brands/zara.webp" },
-];
-
+// Main Page
 export function Hero() {
-  // Features array
-  const features: Feature[] = [
-    {
-      title: "Fast Delivery",
-      caption: "Get your orders in 2-3 days",
-      icon: Zap,
-    },
-    { title: "Free Shipping", caption: "On orders over $50", icon: Truck },
-    {
-      title: "Secure Payment",
-      caption: "100% secure transactions",
-      icon: Shield,
-    },
-    {
-      title: "Quality Guarantee",
-      caption: "30-day money-back guarantee",
-      icon: Award,
-    },
-  ];
-
   return (
     <div>
       {/* Hero Section */}
@@ -111,38 +68,6 @@ export function Hero() {
           </div>
         </div>
       </section>
-
-      {/* Features Section */}
-      <section className="max-w-7xl mx-auto px-4 py-16 overflow-hidden">
-
-      <div className="relative w-full overflow-hidden">
-        <motion.div
-    className="flex w-max" // w-max ensures the div expands to fit all items
-    animate={{ x: ["0%", "-50%"] }}
-    transition={{
-      ease: "linear",
-      duration: 20,
-      repeat: Infinity,
-    }}
-  >
-    {/* Duplicate brands for infinite effect */}
-    {[...brands, ...brands].map((brand, index) => (
-      <div
-        key={index}
-        className="flex items-center justify-center bg-gray-50 rounded-xl p-6 min-w-[200px] mx-4 hover:bg-gray-100 transition"
-      >
-        <Image
-          src={brand.logo}
-          alt={brand.name}
-          width={400}
-          height={100}
-          className="h-12 w-auto object-contain grayscale hover:grayscale-0 transition"
-        />
-      </div>
-    ))}
-  </motion.div>
-      </div>
-    </section>
     </div>
   );
 }

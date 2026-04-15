@@ -6,6 +6,7 @@ import { ChooseUs } from "@/components/sections/ChooseUs";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { CTASection } from "@/components/sections/CTASection";
 import type { Metadata } from "next";
+import { BrandsSlider } from "@/components/sections/BrandsSlider";
 
 // Metadata
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export const metadata: Metadata = {
   ],
 
   authors: [{ name: "Ahmed Talaat" }],
+  robots: "index, follow",
 
   openGraph: {
     title: "Bazarna | Premium Tech Store",
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
     siteName: "Bazarna",
     images: [
       {
-        url: "/og/about.png",
+        url: "/og/image.png",
         width: 1200,
         height: 630,
         alt: "About Bazarna",
@@ -45,7 +47,7 @@ export const metadata: Metadata = {
     title: "Bazarna | Premium Tech Store",
     description:
       "Shop the latest tech products with Bazarna. Explore best sellers, shop by category, and discover why our customers love us.",
-    images: ["/og/about.png"],
+    images: ["/og/image.png"],
   },
 };
 
@@ -54,6 +56,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       <Hero />
+      <BrandsSlider />
       <BestSellers />
       <ShopByCategory />
       <ChooseUs />

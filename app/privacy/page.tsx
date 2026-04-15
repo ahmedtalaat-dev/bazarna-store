@@ -78,8 +78,8 @@ const sections = [
     content: ["You can contact us via:"],
     list: [
       "Email: privacy@Bazarna.com",
-      "Phone: +1 (555) 123-4567",
-      "Address: 123 Tech Street, New York, NY",
+      "Phone: +20 1104894017",
+      "Address: 123 Al Salam Street, Minya, Egypt",
     ],
   },
 ];
@@ -87,7 +87,7 @@ const sections = [
 // Privacy Page
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white">
       
       {/* Header section */}
       <section className="bg-gradient-to-br from-blue-50 to-indigo-50 py-12">
@@ -131,6 +131,6 @@ export default function PrivacyPage() {
 
         </div>
       </div>
-    </div>
+    </main>
   );
 }

@@ -5,7 +5,7 @@ import { Suspense } from "react";
 
 // Metadata
 export const metadata: Metadata = {
-  title: "Bazarna | Shop Online",
+  title: "Shop Online | Bazarna",
   description:
     "Browse and shop the latest tech products at Bazarna. Find best sellers, filter by category, price, and rating, and enjoy a seamless online shopping experience.",
 
@@ -49,7 +49,13 @@ export const metadata: Metadata = {
 // Shop Page
 export default function ShopPage() {
   return (
-    <Suspense fallback={<p className="text-center py-10">Loading...</p>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+        </div>
+      }
+    >
       <ShopPageContent />
     </Suspense>
   );

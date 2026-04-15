@@ -1,14 +1,24 @@
 // Imports
-import { Suspense } from 'react';
-import type { Metadata } from 'next';
-import SearchResultsPageContent from '@/components/pages/SearchResultsPageContent';
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import SearchResultsPageContent from "@/components/pages/SearchResultsPageContent";
 
 // Metadata
 export const metadata: Metadata = {
   title: "Search Products | Bazarna",
-  description: "Find your favorite tech products quickly and easily on Bazarna using our search feature.",
-  keywords: ["Bazarna", "search products", "tech store", "electronics shop", "find products online"],
+  description:
+    "Find your favorite tech products quickly and easily on Bazarna using our search feature.",
+
+  keywords: [
+    "Bazarna",
+    "search products",
+    "tech store",
+    "electronics shop",
+    "find products online",
+  ],
+
   authors: [{ name: "Ahmed Talaat" }],
+
   openGraph: {
     title: "Search Products | Bazarna",
     description: "Discover and search for the best tech products at Bazarna.",
@@ -16,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Bazarna",
     images: [
       {
-        url: "/og/search.png",
+        url: "/og/image.png",
         width: 1200,
         height: 630,
         alt: "Bazarna Search Page",
@@ -28,17 +38,17 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Search Products | Bazarna",
     description: "Quickly search and find tech products on Bazarna.",
-    images: ["/og/search.png"],
+    images: ["/og/image.png"],
   },
 };
 
-// Main page
+// Search page
 export default function SearchPage() {
   return (
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          Loading search results...
+          <div className="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
         </div>
       }
     >

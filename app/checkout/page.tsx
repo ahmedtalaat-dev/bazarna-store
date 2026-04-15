@@ -5,10 +5,20 @@ import type { Metadata } from "next";
 // Metadata
 export const metadata: Metadata = {
   title: "Checkout | Bazarna",
-  description: "Manage your orders, and checkout.",
+  description:
+    "Securely complete your purchase and finalize your order on Bazarna.",
+
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
-// Main Page
+// Checkout Page
 export default function CheckoutPage() {
-  return <CheckoutPageContent />;
+  return (
+    <main>
+      <CheckoutPageContent />
+    </main>
+  );
 }

@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Bazarna",
     images: [
       {
-        url: "/og/contact.png",
+        url: "/og/image.png",
         width: 1200,
         height: 630,
         alt: "Contact Bazarna",
@@ -40,11 +40,15 @@ export const metadata: Metadata = {
     title: "Contact Us Bazarna",
     description:
       "Reach out to Bazarna for inquiries, support, or feedback on our tech products.",
-    images: ["/og/contact.png"],
+    images: ["/og/image.png"],
   },
 };
 
-// Main component
+// Contact Page
 export default function ContactPage() {
-  return <ContactPageContent />;
+  return (
+    <main>
+      <ContactPageContent />
+    </main>
+  );
 }

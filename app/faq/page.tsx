@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "Bazarna",
     images: [
       {
-        url: "/og/faq.png",
+        url: "/og/image.png",
         width: 1200,
         height: 630,
         alt: "Bazarna FAQ",
@@ -41,11 +41,15 @@ export const metadata: Metadata = {
     title: "Bazarna FAQ",
     description:
       "Check frequently asked questions about Bazarna's products and services.",
-    images: ["/og/faq.png"],
+    images: ["/og/image.png"],
   },
 };
 
-// Main component
+// FAQ Page
 export default function FAQPage() {
-  return <FAQPageContent />;
+  return (
+    <main>
+      <FAQPageContent />
+    </main>
+  );
 }

@@ -6,9 +6,18 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "My Account | Bazarna",
   description: "Manage your profile, orders, and saved addresses.",
+
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 // Account Page
 export default function AccountPage() {
-  return <AccountPageContent />;
+  return (
+    <main>
+      <AccountPageContent />
+    </main>
+  );
 }
