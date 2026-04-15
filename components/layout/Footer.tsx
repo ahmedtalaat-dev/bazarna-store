@@ -1,14 +1,18 @@
 "use client";
 
+// Imports
 import Link from "next/link";
-import { Award, Mail} from "lucide-react";
+import { Award, Mail } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/contexts/ToastContext";
 
+// Footer Content
 export function Footer() {
+  // States & Toast
   const [email, setEmail] = useState<string>("");
   const { addToast } = useToast();
 
+  // Handle Newsletter
   const handleNewsletter = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -17,6 +21,33 @@ export function Footer() {
       setEmail("");
     }
   };
+
+  // Legal links
+  const legalLinks = [
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms & Conditions", href: "/terms" },
+    { name: "Returns & Refunds", href: "/returns" },
+    { name: "Shipping Info", href: "/shipping" },
+  ];
+
+  // Categories links
+  const categories = [
+    { name: "Beauty", href: "/shop?category=beauty" },
+    { name: "Fragrances", href: "/shop?category=fragrances" },
+    { name: "Groceries", href: "/shop?category=groceries" },
+    { name: "Furniture", href: "/shop?category=furniture" },
+  ];
+
+  // Quick links
+  const quickLinks = [
+    { name: "Shop", href: "/shop" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact", href: "/contact" },
+    { name: "FAQ", href: "/faq" },
+  ];
+
+  // Awards
+  const awards = Array(4).fill(0);
 
   return (
     <footer className="bg-gray-900 text-gray-100">
@@ -39,6 +70,7 @@ export function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email"
+                aria-label="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -74,41 +106,16 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Quick Links</h4>
 
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link
-                  href="/shop"
-                  className="hover:text-white transition-colors"
-                >
-                  Shop
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/about"
-                  className="hover:text-white transition-colors"
-                >
-                  About Us
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/contact"
-                  className="hover:text-white transition-colors"
-                >
-                  Contact
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/faq"
-                  className="hover:text-white transition-colors"
-                >
-                  FAQ
-                </Link>
-              </li>
+              {quickLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="hover:text-white transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -117,41 +124,16 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Categories</h4>
 
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link
-                  href="/shop?category=beauty"
-                  className="hover:text-white transition-colors"
-                >
-                  Beauty
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/shop?category=fragrances"
-                  className="hover:text-white transition-colors"
-                >
-                  Fragrances
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/shop?category=groceries"
-                  className="hover:text-white transition-colors"
-                >
-                  Groceries
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/shop?category=furniture"
-                  className="hover:text-white transition-colors"
-                >
-                  Furniture
-                </Link>
-              </li>
+              {categories.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="hover:text-white transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -160,78 +142,35 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Legal</h4>
 
             <ul className="space-y-2 text-sm text-gray-400">
-              <li>
-                <Link
-                  href="/privacy"
-                  className="hover:text-white transition-colors"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/terms"
-                  className="hover:text-white transition-colors"
-                >
-                  Terms & Conditions
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/returns"
-                  className="hover:text-white transition-colors"
-                >
-                  Returns & Refunds
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  href="/shipping"
-                  className="hover:text-white transition-colors"
-                >
-                  Shipping Info
-                </Link>
-              </li>
+              {legalLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="hover:text-white transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        {/* Social + Contact */}
+        {/* Awards + Contact */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* Social Icons */}
+            {/* Awards */}
             <div className="flex items-center gap-6">
-              <span
-                className="text-gray-400 transition-colors"
-              >
-                <Award className="w-5 h-5" />
-              </span>
-
-              <span
-                className="text-gray-400 transition-colors"
-              >
-                <Award className="w-5 h-5" />
-              </span>
-
-              <span
-                className="text-gray-400 transition-colors"
-              >
-                <Award className="w-5 h-5" />
-              </span>
-
-              <span
-                className="text-gray-400 transition-colors"
-              >
-                <Award className="w-5 h-5" />
-              </span>
+              {awards.map((_, index) => (
+                <span key={index} className="text-gray-400 transition-colors">
+                  <Award aria-hidden="true" className="w-5 h-5" />
+                </span>
+              ))}
             </div>
 
             {/* Email */}
             <div className="flex items-center gap-2 text-gray-400 text-sm">
-              <Mail className="w-4 h-4" />
+              <Mail aria-hidden="true" className="w-4 h-4" />
               <span>support@bazarna.com</span>
             </div>
           </div>
