@@ -9,11 +9,13 @@ import { Heart, ShoppingCart, User, Menu, X, Search } from "lucide-react";
 import { SearchToast } from "@/components/ui/SearchToast";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 
+// Links type
 type NavLink = {
   name: string;
   href: string;
 };
 
+// Navbar links
 const navLinks: NavLink[] = [
   { name: "Home", href: "/" },
   { name: "Shop", href: "/shop" },
@@ -21,15 +23,17 @@ const navLinks: NavLink[] = [
   { name: "Contact", href: "/contact" },
 ];
 
+// Main Page
 export function Header() {
   const { cartCount, wishlist } = useEcommerce();
+  const router = useRouter();
 
+  // States
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchToastOpen, setSearchToastOpen] = useState<boolean>(false);
 
-  const router = useRouter();
-
+  // Handle Search
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
