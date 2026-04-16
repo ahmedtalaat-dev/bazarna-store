@@ -12,7 +12,7 @@ The website contains the following pages:
 - **Shop** – Browse products with filtering and search functionality.
 - **Product Details** – Detailed product page with images, descriptions, and reviews.
 - **Cart** – Manage items selected for purchase.
-- **Wishlist** – Save your favorite products for later.
+- **Wishlist** – Save your favorite products.
 - **Checkout** – Complete your order securely.
 - **Track Order** – Check the status of your orders.
 - **FAQ** – Frequently asked questions.
