@@ -33,8 +33,7 @@ export default function ProductPageContent({ id }: { id: string }) {
 
         const allData = await getProducts();
         const related = (allData as Product[])
-          .filter((p) => p.category === data.category && p.id !== data.id)
-          .slice(0, 4);
+          .filter((p) => p.category === data.category && p.id !== data.id);
 
         setRelatedProducts(related);
       } catch (err) {
@@ -199,13 +198,16 @@ export default function ProductPageContent({ id }: { id: string }) {
       {/* Related */}
       {relatedProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-          <div className="grid md:grid-cols-4 gap-6">
-            {relatedProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
-        </section>
+    <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+
+    <div className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth">
+      {relatedProducts.map((p) => (
+        <div key={p.id} className="min-w-[300px] flex-shrink-0">
+          <ProductCard product={p} />
+        </div>
+      ))}
+    </div>
+  </section>
       )}
     </div>
   );
