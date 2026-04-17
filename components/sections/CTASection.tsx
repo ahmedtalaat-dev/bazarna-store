@@ -13,7 +13,7 @@ export function CTASection() {
         </h2>
 
         {/* Section Subtitle */}
-        <p className="text-xl text-white/80 mb-8">
+        <p className="text-xl text-white mb-8">
           Browse our exclusive collection and find the perfect products for you.
         </p>
 
