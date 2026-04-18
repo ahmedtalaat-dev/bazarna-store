@@ -42,7 +42,6 @@ export function Testimonials() {
           >
             {/* Star Rating */}
             <div
-              aria-label={`Rating: ${testimonial.rating} out of 5`}
               className="flex gap-1 mb-4"
             >
               {Array.from({ length: 5 }, (_, i) => (
