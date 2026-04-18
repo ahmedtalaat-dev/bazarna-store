@@ -1,6 +1,22 @@
 # Bazarna Store 🛒
 
-Bazarna Store is a modern, responsive e-commerce website developed by **Ahmed Tallat** using **Next.js**, **TypeScript**, **Tailwind CSS**, **Lucide React**, and **Framer Motion**. This project demonstrates a complete e-commerce workflow with smooth animations, reusable components, and a clean, user-friendly interface.
+Bazarna Store is a modern, responsive e-commerce website developed using **Next.js**, **TypeScript**, **Tailwind CSS**, **Lucide React**, and **Framer Motion**. This project demonstrates a complete e-commerce workflow with smooth animations, reusable components, and a clean, user-friendly interface.
+
+---
+
+## 📸 Website Preview
+
+### 🏠 Home Page
+![Home Page](./public/screenshots/home.png)
+
+### 🛍️ Shop Page
+![Shop Page](./public/screenshots/shop.png)
+
+### 📦 Product Details
+![Product Details](./public/screenshots/product.png)
+
+### 🛒 Cart Page
+![Cart Page](./public/screenshots/cart.png)
 
 ---
 
@@ -46,5 +62,36 @@ The website contains the following pages:
 
 ---
 
+## ⚙️ Installation & Setup
+
+Follow these steps to run the project locally:
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/ahmedtalaat-dev/bazarna-store.git
+```
+
+2️⃣ Navigate to the project folder
+```bash
+cd bazarna-store
+```
+
+3️⃣ Install dependencies
+```bash
+npm install
+```
+
+4️⃣ Run the development server
+```bash
+npm run dev
+```
+
+5️⃣ Open in browser
+```bash
+http://localhost:3000
+```
+
+---
+
 ## 🧑‍💻 Developer
-Ahmed Talaat – Front End web developer
+Ahmed Talaat – Front-End Developer
