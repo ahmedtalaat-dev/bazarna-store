@@ -1,23 +1,26 @@
 "use client";
 
+// Imports
 import { Product } from "@/data/products";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
-
+ 
+// Product card interface
 interface ProductCardProps {
   product: Product;
   isQuickViewOpen?: boolean;
   onQuickView?: (product: Product) => void;
 }
 
+// Main Page
 export function ProductCard({ product }: ProductCardProps) {
+  // Ecommerce data
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } =
     useEcommerce();
   const { addToast } = useToast();
-
   const inWishlist = isInWishlist(product.id);
 
   // FIX: safe image
@@ -26,6 +29,7 @@ export function ProductCard({ product }: ProductCardProps) {
     (product.images && product.images.length > 0 && product.images[0]) ||
     "/placeholder.png";
 
+    // Handle add to cart
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -33,6 +37,7 @@ export function ProductCard({ product }: ProductCardProps) {
     addToast("Added to cart!", "success");
   };
 
+  // Handle wishlist
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -116,15 +121,9 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="text-lg font-bold text-blue-600">
               ${product.price}
             </span>
-
-            {/* {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">
-                ${product.originalPrice}
-              </span>
-            )} */}
           </div>
 
-          {/* Button */}
+          {/* Add to Cart button */}
           <div className="mt-auto">
             <button
               onClick={handleAddToCart}

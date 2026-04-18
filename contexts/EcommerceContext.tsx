@@ -1,19 +1,22 @@
 'use client';
 
+// Imports
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { type Product } from '@/data/products';
 
+// CartItem interface
 export interface CartItem {
   product: Product;
   quantity: number;
-  color?: string;
   size?: string;
 }
 
+// WishlistItem interface
 export interface WishlistItem {
   product: Product;
 }
 
+// Ecommerce interface
 interface EcommerceContextType {
   cart: CartItem[];
   wishlist: WishlistItem[];
@@ -28,8 +31,10 @@ interface EcommerceContextType {
   cartCount: number;
 }
 
+//Create Ecommerce Context
 const EcommerceContext = createContext<EcommerceContextType | undefined>(undefined);
 
+// Ecommerce Provider
 export function EcommerceProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
@@ -84,17 +89,17 @@ export function EcommerceProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (product: Product, quantity: number, color?: string, size?: string) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.product.id === product.id && item.color === color && item.size === size);
+      const existingItem = prevCart.find((item) => item.product.id === product.id && item.size === size);
 
       if (existingItem) {
         return prevCart.map((item) =>
-          item.product.id === product.id && item.color === color && item.size === size
+          item.product.id === product.id && item.size === size
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
 
-      return [...prevCart, { product, quantity, color, size }];
+      return [...prevCart, { product, quantity, size }];
     });
   };
 
@@ -163,6 +168,7 @@ export function EcommerceProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Main Page
 export function useEcommerce() {
   const context = useContext(EcommerceContext);
   if (!context) {

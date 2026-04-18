@@ -1,5 +1,6 @@
 "use client";
 
+// Imports
 import { ProductCard } from "@/components/product/product-card";
 import { type Product } from "@/data/products";
 import Link from "next/link";
@@ -8,17 +9,18 @@ import { useState, useEffect, useRef } from "react";
 import { getProducts } from "@/lib/api";
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 
+// Main Page
 export function BestSellers() {
+  // States
   const [isMobile, setIsMobile] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const sliderRef = useRef<HTMLDivElement>(null);
-
   const totalSlides = 4;
 
-  // ✅ Fetch Products
+  // Fetch Products
   useEffect(() => {
     async function fetchData() {
       try {
@@ -57,7 +59,7 @@ export function BestSellers() {
     if (!isMobile || loading) return;
     const interval = setInterval(nextSlide, 3000);
     return () => clearInterval(interval);
-  }, [isMobile, loading]);
+  }, [isMobile, loading, nextSlide]);
 
   // Infinite loop transition
   useEffect(() => {

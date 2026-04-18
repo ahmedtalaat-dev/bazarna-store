@@ -1,6 +1,23 @@
+"use client";
+
 // Imports
 import Image from "next/image";
 import { testimonials } from "@/data/products";
+import { motion, type Variants   } from "framer-motion";
+
+// Animation Variants
+const cardVariants: Variants  = {
+  hidden: { opacity: 0, y: 50 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.2, // stagger effect
+      duration: 0.5,
+      ease: "easeOut",
+    },
+  }),
+};
 
 // Main Page
 export function Testimonials() {
@@ -13,9 +30,14 @@ export function Testimonials() {
 
       {/* Testimonials Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {testimonials.map((testimonial) => (
-          <div
+        {testimonials.map((testimonial, i) => (
+          <motion.div
             key={testimonial.id}
+            custom={i}
+            variants={cardVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }} // 🔥 only first time
             className="bg-gray-50 rounded-lg p-8 hover:shadow-lg transition-shadow"
           >
             {/* Star Rating */}
@@ -26,6 +48,7 @@ export function Testimonials() {
               {Array.from({ length: 5 }, (_, i) => (
                 <span
                   key={i}
+                  aria-hidden="true"
                   className={`${
                     i < testimonial.rating ? "text-yellow-400" : "text-gray-300"
                   }`}
@@ -57,7 +80,7 @@ export function Testimonials() {
                 <p className="text-sm text-gray-600">{testimonial.role}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

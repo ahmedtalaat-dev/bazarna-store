@@ -1,27 +1,29 @@
 'use client';
 
+// Imports
 import { ChevronDown, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
+// Filter interface
 export interface FilterOptions {
   category?: string;
   priceRange?: [number, number];
   rating?: number;
-  color?: string;
 }
 
+// Props interface
 interface ProductFiltersProps {
   onFilterChange: (filters: FilterOptions) => void;
   currentFilters: FilterOptions;
   onReset: () => void;
 }
 
+// Main Page
 export function ProductFilters({ onFilterChange, currentFilters, onReset }: ProductFiltersProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     category: true,
     price: true,
     rating: true,
-    color: true,
   });
 
   // Local state for price range to prevent excessive re-renders
@@ -47,11 +49,12 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
       ) {
         onFilterChange({ ...currentFilters, priceRange: localPriceRange });
       }
-    }, 500); // 500ms debounce
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [localPriceRange, onFilterChange]);
 
+  // Toggle section
   const toggleSection = (section: string) => {
     setExpandedSections((prev) => ({
       ...prev,
@@ -59,8 +62,8 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
     }));
   };
 
+  // Categories & Ratings
   const categories = ['beauty', 'fragrances', 'furniture', 'groceries'];
-  const colors = ['Black', 'White', 'Silver', 'Gold', 'Gray', 'Brown', 'Blue'];
   const ratings = [5, 4, 3, 2, 1];
 
   return (
@@ -180,36 +183,6 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
                 <span className="text-gray-700 group-hover:text-blue-600">
                   {'★'.repeat(rating)}{'☆'.repeat(5 - rating)} {rating} & up
                 </span>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Color Filter */}
-      <div className="border rounded-lg">
-        <button
-          onClick={() => toggleSection('color')}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors font-semibold text-blue-600"
-        >
-          Color
-          <ChevronDown
-            className={`w-5 h-5 transition-transform ${expandedSections.color ? 'rotate-180' : ''}`}
-          />
-        </button>
-        {expandedSections.color && (
-          <div className="border-t p-4 space-y-3">
-            {colors.map((color) => (
-              <label key={color} className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="color"
-                  value={color}
-                  checked={currentFilters.color === color}
-                  onChange={() => onFilterChange({ ...currentFilters, color })}
-                  className="w-4 h-4 accent-blue-600"
-                />
-                <span className="text-gray-700 group-hover:text-blue-600">{color}</span>
               </label>
             ))}
           </div>

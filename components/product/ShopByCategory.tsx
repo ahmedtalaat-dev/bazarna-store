@@ -1,6 +1,8 @@
+// Imports
 import Link from "next/link";
 import Image from "next/image";
 
+// Category interface
 interface Category {
   title: string;
   description: string;
@@ -8,28 +10,29 @@ interface Category {
   imageSrc: string;
 }
 
+// Main Page
 export function ShopByCategory() {
   // categories
   const categories: Category[] = [
-  {
-    title: "Beauty",
-    description: "Explore our beauty products",
-    href: "/shop?category=Beauty",
-    imageSrc: "/categories/beauty.webp",
-  },
-  {
-    title: "Fragrances",
-    description: "Find your signature scent",
-    href: "/shop?category=Fragrances",
-    imageSrc: "/categories/fragrances.webp",
-  },
-  {
-    title: "Furniture",
-    description: "Upgrade your living space",
-    href: "/shop?category=Furniture",
-    imageSrc: "/categories/furniture.webp",
-  },
-];
+    {
+      title: "Beauty",
+      description: "Explore our beauty products",
+      href: "/shop?category=Beauty",
+      imageSrc: "/categories/beauty.webp",
+    },
+    {
+      title: "Fragrances",
+      description: "Find your signature scent",
+      href: "/shop?category=Fragrances",
+      imageSrc: "/categories/fragrances.webp",
+    },
+    {
+      title: "Furniture",
+      description: "Upgrade your living space",
+      href: "/shop?category=Furniture",
+      imageSrc: "/categories/furniture.webp",
+    },
+  ];
 
   return (
     <section className="max-w-7xl mx-auto px-4 py-16">

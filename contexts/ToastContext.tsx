@@ -1,13 +1,15 @@
 'use client';
 
+// Imports
 import React, { createContext, useContext, useState } from 'react';
 
+// Toast interface
 export interface Toast {
   id: string;
   message: string;
   type: 'success' | 'error' | 'info';
 }
-
+ //ToastContext interface
 interface ToastContextType {
   toasts: Toast[];
   addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
@@ -16,6 +18,7 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+// Toast Provider
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -40,6 +43,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Main Page
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {

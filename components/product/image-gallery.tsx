@@ -1,19 +1,23 @@
 "use client";
 
+// Imports
 import Image from "next/image";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 
+// ImageGallery interface
 interface ImageGalleryProps {
   images: string[];
   productName: string;
 }
 
+// Main Page
 export function ImageGallery({ images, productName }: ImageGalleryProps) {
+  // States
   const [selectedImage, setSelectedImage] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  // ✅ FIX: safe images
+  // FIX: safe images
   const safeImages =
     images && images.length > 0 ? images : ["/placeholder.png"];
 
@@ -23,7 +27,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
 
   const prevImage = () => {
     setSelectedImage(
-      (prev) => (prev - 1 + safeImages.length) % safeImages.length
+      (prev) => (prev - 1 + safeImages.length) % safeImages.length,
     );
   };
 
@@ -77,9 +81,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
               key={i}
               onClick={() => setSelectedImage(i)}
               className={`border-2 rounded-lg overflow-hidden ${
-                selectedImage === i
-                  ? "border-blue-600"
-                  : "border-gray-200"
+                selectedImage === i ? "border-blue-600" : "border-gray-200"
               }`}
             >
               <Image
