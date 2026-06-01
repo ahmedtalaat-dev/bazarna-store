@@ -38,11 +38,11 @@ export default function AccountPageContent() {
     default: true,
     },
     {
-      type: "Office",
-      street: "456 Business Ave",
-      city: "San Francisco, CA 94105",
-      default: false,
-    },
+    type: "Office",
+    street: "22 El Gomhoria St",
+    city: "Maghagha, Minya, Egypt",
+    default: false,
+   },
   ];
 
   // Orders data
