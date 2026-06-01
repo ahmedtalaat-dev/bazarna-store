@@ -32,10 +32,10 @@ export default function AccountPageContent() {
   // Addresses data
   const addresses: Address[] = [
     {
-      type: "Home",
-      street: "123 Main St, Apt 4B",
-      city: "New York, NY 10001",
-      default: true,
+    type: "Home",
+    street: "15 El Tahrir St, Dokki",
+    city: "Cairo, Egypt",
+    default: true,
     },
     {
       type: "Office",
