@@ -7,6 +7,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { EcommerceProvider } from "@/contexts/EcommerceContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 // Google Fonts
 const _geist = Geist({ subsets: ["latin"] });
@@ -82,12 +83,14 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <ToastProvider>
-          <EcommerceProvider>
-            <Header />
-            {children}
-            <Footer />
-            <ToastDisplay />
-          </EcommerceProvider>
+          <AuthProvider>
+            <EcommerceProvider>
+              <Header />
+              {children}
+              <Footer />
+              <ToastDisplay />
+            </EcommerceProvider>
+          </AuthProvider>
         </ToastProvider>
       </body>
     </html>
