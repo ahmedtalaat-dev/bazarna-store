@@ -2,15 +2,20 @@
 export interface Product {
   id: string;
   title: string;
-  thumbnail: string;
+  imageCover: string;
   price: number;
+  originalPrice?: number;
   images: string[];
   category: string;
+  categoryId?: string;
+  brandId?: string;
   rating: number;
   reviews: Review[];
   description: string;
   brand?: string;
   stock?: number;
+  colors?: string[];
+  sizes?: string[];
   sku?: string;
   shippingInformation?: string;
   warrantyInformation?: string;
