@@ -17,13 +17,14 @@ interface ToastContextType {
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
+let toastSequence = 0;
 
 // Toast Provider
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
-    const id = Math.random().toString(36).substr(2, 9);
+    const id = String(++toastSequence);
     setToasts((prev) => [...prev, { id, message, type }]);
 
     // Auto-remove after 3 seconds
