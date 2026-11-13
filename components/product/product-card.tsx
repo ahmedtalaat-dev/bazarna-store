@@ -25,29 +25,41 @@ export function ProductCard({ product }: ProductCardProps) {
 
   // FIX: safe image
   const imageSrc =
-    product.thumbnail ||
+    product.imageCover ||
     (product.images && product.images.length > 0 && product.images[0]) ||
     "/placeholder.png";
 
-    // Handle add to cart
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addToCart(product, 1);
-    addToast("Added to cart!", "success");
+    try {
+      await addToCart(product, 1);
+      addToast("Added to cart!", "success");
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : "Could not add this item to cart.",
+        "error",
+      );
+    }
   };
 
-  // Handle wishlist
-  const handleWishlist = (e: React.MouseEvent) => {
+  const handleWishlist = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (inWishlist) {
-      removeFromWishlist(product.id);
-      addToast("Removed from wishlist", "info");
-    } else {
-      addToWishlist(product);
-      addToast("Added to wishlist!", "success");
+    try {
+      if (inWishlist) {
+        await removeFromWishlist(product.id);
+        addToast("Removed from wishlist", "info");
+      } else {
+        await addToWishlist(product);
+        addToast("Added to wishlist!", "success");
+      }
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : "Could not update your wishlist.",
+        "error",
+      );
     }
   };
 
@@ -61,6 +73,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={product.title || product.title || "product"}
             width={500}
             height={500}
+            unoptimized
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
 

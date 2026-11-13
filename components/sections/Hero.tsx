@@ -26,7 +26,7 @@ export function Hero() {
             {/* Subtitle */}
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
               Discover our curated collection of electronics, computers, and
-              accessories. Quality you can trust, prices you'll love.
+              accessories. Quality you can trust, prices you&apos;ll love.
             </p>
 
             {/* Action Buttons */}

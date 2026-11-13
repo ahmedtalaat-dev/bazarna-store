@@ -1,161 +1,157 @@
 "use client";
 
-// Imports
-import { useMemo, useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ProductCard } from "@/components/product/product-card";
-import { ProductFilters } from "@/components/product/product-filters";
-import { getProducts } from "@/lib/api";
-import ProductSkeleton from "@/components/product/ProductSkeleton";
-import { type Product } from "@/data/products";
-import Pagination from "../ui/Pagination";
+import { ProductCard } from "@/components/product-card";
+import { ProductFilters, type FilterOptions } from "@/components/product/product-filters";
+import ProductSkeleton from "@/components/ProductSkeleton";
+import Pagination from "@/components/ui/Pagination";
+import { getProductPage, type ProductPage } from "@/lib/api";
 
-// Main Page
+const pageSize = 12;
+
 export default function SearchResultsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  // States
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Get search query from URL
+  const queryString = searchParams.toString();
   const query = searchParams.get("q") || "";
-
-  // Fetch data
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  // URL params
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
+  const category = searchParams.get("category") || undefined;
+  const color = searchParams.get("color") || undefined;
+  const brand = searchParams.get("brand") || undefined;
+  const rating = Number(searchParams.get("rating")) || undefined;
+  const minPrice = searchParams.get("minPrice") || undefined;
+  const maxPrice = searchParams.get("maxPrice") || undefined;
   const sortBy = searchParams.get("sort") || "newest";
-  const category = searchParams.get("category");
-  const rating = searchParams.get("rating");
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
-  const page = Number(searchParams.get("page")) || 1;
-  const itemsPerPage = 9;
+  const [result, setResult] = useState<ProductPage>({
+    products: [],
+    page: 1,
+    limit: pageSize,
+    totalPages: 0,
+    count: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Update URL
+  useEffect(() => {
+    let active = true;
+    const params = new URLSearchParams(queryString);
+    const apiSort: Record<string, string> = {
+      newest: "-createdAt",
+      "best-selling": "-sold",
+      "price-low": "price",
+      "price-high": "-price",
+    };
+    const apiQuery: Record<string, string | number | undefined> = {
+      page,
+      limit: pageSize,
+      sort: apiSort[params.get("sort") || "newest"] || "-createdAt",
+      keyword: query || undefined,
+    };
+    if (category) apiQuery.category = category;
+    if (brand) apiQuery.brand = brand;
+    if (color) apiQuery.colors = color;
+    if (rating) apiQuery["ratingsAverage[gte]"] = rating;
+    if (minPrice) apiQuery["price[gte]"] = minPrice;
+    if (maxPrice) apiQuery["price[lte]"] = maxPrice;
+
+    Promise.resolve()
+      .then(() => {
+        if (!active) return undefined;
+        setLoading(true);
+        setError(null);
+        return getProductPage(apiQuery);
+      })
+      .then((response) => {
+        if (active && response) setResult(response);
+      })
+      .catch((cause: unknown) => {
+        if (!active) return;
+        setError(
+          cause instanceof Error ? cause.message : "Could not search products.",
+        );
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [queryString, query, page, category, brand, color, rating, minPrice, maxPrice]);
+
   const updateParam = useCallback(
-    (key: string, value: any) => {
+    (key: string, value: string | number | undefined) => {
       const params = new URLSearchParams(searchParams.toString());
-
-      if (!value) {
-        params.delete(key);
-      } else {
-        params.set(key, value.toString());
-      }
-
-      router.push(`/search?${params.toString()}`);
+      if (value === undefined || value === "") params.delete(key);
+      else params.set(key, String(value));
+      if (key !== "page") params.set("page", "1");
+      router.push(`/search${params.size ? `?${params.toString()}` : ""}`);
     },
     [router, searchParams],
   );
 
-  // Filter + Search + Sort
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-
-    // search
-    if (query) {
-      result = result.filter((item) =>
-        item.title.toLowerCase().includes(query.toLowerCase()),
-      );
-    }
-
-    // filters
-    if (category) result = result.filter((i) => i.category === category);
-    if (rating) result = result.filter((i) => i.rating >= Number(rating));
-    if (minPrice) result = result.filter((i) => i.price >= Number(minPrice));
-    if (maxPrice) result = result.filter((i) => i.price <= Number(maxPrice));
-
-    // sort
-    switch (sortBy) {
-      case "price-low":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "best-selling":
-        result.sort((a, b) => b.reviews.length - a.reviews.length);
-        break;
-      default:
-        result.sort((a, b) => b.rating - a.rating);
-    }
-
-    return result;
-  }, [products, query, category, rating, sortBy, minPrice, maxPrice]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIdx = (page - 1) * itemsPerPage;
-  const paginatedProducts = filteredProducts.slice(
-    startIdx,
-    startIdx + itemsPerPage,
-  );
-
-  // Filters handler
   const handleFilterChange = useCallback(
-    (newFilters: any) => {
+    (newFilters: FilterOptions) => {
       const params = new URLSearchParams(searchParams.toString());
-
-      Object.entries(newFilters).forEach(([key, value]) => {
-        if (key === "priceRange" && Array.isArray(value)) {
-          params.set("minPrice", value[0].toString());
-          params.set("maxPrice", value[1].toString());
-        } else if (!value) {
-          params.delete(key);
-        } else {
-          params.set(key, value.toString());
-        }
-      });
-
+      for (const key of ["category", "color", "rating", "minPrice", "maxPrice"]) {
+        params.delete(key);
+      }
+      if (newFilters.category) params.set("category", newFilters.category);
+      if (newFilters.color) params.set("color", newFilters.color);
+      if (newFilters.rating) params.set("rating", String(newFilters.rating));
+      if (newFilters.priceRange) {
+        params.set("minPrice", String(newFilters.priceRange[0]));
+        params.set("maxPrice", String(newFilters.priceRange[1]));
+      }
       params.set("page", "1");
       router.push(`/search?${params.toString()}`);
     },
     [router, searchParams],
   );
 
-  // Reset filters
   const handleResetFilters = useCallback(() => {
-    router.push("/search");
-  }, [router]);
+    const params = new URLSearchParams(searchParams.toString());
+    for (const key of ["category", "color", "rating", "minPrice", "maxPrice", "page"]) {
+      params.delete(key);
+    }
+    router.push(`/search${params.size ? `?${params.toString()}` : ""}`);
+  }, [router, searchParams]);
+
+  const filters = useMemo<FilterOptions>(
+    () => ({
+      category,
+      color,
+      rating,
+      priceRange:
+        minPrice || maxPrice
+          ? [Number(minPrice || 0), Number(maxPrice || 2000)]
+          : undefined,
+    }),
+    [category, color, rating, minPrice, maxPrice],
+  );
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <h1 className="text-3xl md:text-4xl font-bold text-blue-600 mb-2">
             Search Results
           </h1>
           <p className="text-gray-600">
-            {filteredProducts.length} results for "{query}"
+            {result.count} results for &ldquo;{query}&rdquo;
           </p>
         </div>
       </section>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col-reverse md:flex-row gap-8">
-          {/* Products */}
           <div className="flex-1">
-            {/* Sort */}
             <div className="flex flex-col sm:flex-row sm:justify-between gap-4 mb-6">
               <select
+                aria-label="Sort products"
                 value={sortBy}
-                onChange={(e) => updateParam("sort", e.target.value)}
+                onChange={(event) => updateParam("sort", event.target.value)}
                 className="px-4 py-2 border rounded-lg"
               >
                 <option value="newest">Newest</option>
@@ -165,43 +161,45 @@ export default function SearchResultsPageContent() {
               </select>
             </div>
 
-            {/* Grid */}
             {loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: itemsPerPage }).map((_, i) => (
-                  <ProductSkeleton key={i} />
+                {Array.from({ length: pageSize }).map((_, index) => (
+                  <ProductSkeleton key={index} />
                 ))}
               </div>
-            ) : paginatedProducts.length > 0 ? (
+            ) : error ? (
+              <div className="py-10 text-center text-red-600" role="alert">
+                {error}
+              </div>
+            ) : result.products.length ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginatedProducts.map((product) => (
+                {result.products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <p className="text-center py-10">No products found</p>
+              <div className="text-center py-20">
+                <h2 className="text-2xl font-bold text-blue-600 mb-4">
+                  No products found
+                </h2>
+                <p className="text-gray-600">
+                  {query
+                    ? `We couldn't find anything for "${query}"`
+                    : "Enter a search term to find products."}
+                </p>
+              </div>
             )}
 
-            {/* Pagination */}
             <Pagination
               page={page}
-              totalPages={totalPages}
-              onPageChange={(newPage) => updateParam("page", newPage)}
+              totalPages={result.totalPages}
+              onPageChange={(nextPage) => updateParam("page", nextPage)}
             />
           </div>
-
-          {/* Filters */}
           <aside className="w-full md:w-64">
             <ProductFilters
               onFilterChange={handleFilterChange}
-              currentFilters={{
-                category: category || undefined,
-                rating: rating ? Number(rating) : undefined,
-                priceRange:
-                  minPrice || maxPrice
-                    ? [Number(minPrice || 0), Number(maxPrice || 2000)]
-                    : undefined,
-              }}
+              currentFilters={filters}
               onReset={handleResetFilters}
             />
           </aside>

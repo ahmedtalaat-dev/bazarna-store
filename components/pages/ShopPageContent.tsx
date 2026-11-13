@@ -1,143 +1,159 @@
 "use client";
 
-// Imports
-import { useMemo, useCallback, useState, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ProductCard } from "@/components/product/product-card";
-import { ProductFilters } from "@/components/product/product-filters";
-import { getProducts } from "@/lib/api";
-import ProductSkeleton from "@/components/product/ProductSkeleton";
-import { type Product } from "@/data/products";
-import Pagination from "../ui/Pagination";
+import { ProductCard } from "@/components/product-card";
+import { ProductFilters, type FilterOptions } from "@/components/product/product-filters";
+import ProductSkeleton from "@/components/ProductSkeleton";
+import Pagination from "@/components/ui/Pagination";
+import { getProductPage, type ProductPage } from "@/lib/api";
 
-// Main Page
+const pageSize = 12;
+
 export default function ShopPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const [products, setProducts] = useState<Product[]>([]);
+  const queryString = searchParams.toString();
+  const [result, setResult] = useState<ProductPage>({
+    products: [],
+    page: 1,
+    limit: pageSize,
+    totalPages: 0,
+    count: 0,
+  });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch Data
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getProducts();
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
-  // URL Params
   const sortBy = searchParams.get("sort") || "newest";
-  const category = searchParams.get("category");
-  const rating = searchParams.get("rating");
-  const minPrice = searchParams.get("minPrice");
-  const maxPrice = searchParams.get("maxPrice");
-  const page = Number(searchParams.get("page")) || 1;
+  const category = searchParams.get("category") || undefined;
+  const color = searchParams.get("color") || undefined;
+  const brand = searchParams.get("brand") || undefined;
+  const rating = Number(searchParams.get("rating")) || undefined;
+  const minPrice = searchParams.get("minPrice") || undefined;
+  const maxPrice = searchParams.get("maxPrice") || undefined;
+  const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const viewMode = searchParams.get("view") || "grid";
-  const itemsPerPage = 9;
 
-  // Update URL Params
+  useEffect(() => {
+    let active = true;
+    const params = new URLSearchParams(queryString);
+    const sortValue = params.get("sort");
+    const apiSort: Record<string, string> = {
+      newest: "-createdAt",
+      "best-selling": "-sold",
+      "price-low": "price",
+      "price-high": "-price",
+    };
+    const query: Record<string, string | number | undefined> = {
+      page,
+      limit: pageSize,
+      sort: apiSort[sortValue || "newest"] || "-createdAt",
+      keyword: undefined,
+    };
+    if (category) query.category = category;
+    if (brand) query.brand = brand;
+    if (color) query.colors = color;
+    if (rating) query["ratingsAverage[gte]"] = rating;
+    if (minPrice) query["price[gte]"] = minPrice;
+    if (maxPrice) query["price[lte]"] = maxPrice;
+
+    Promise.resolve()
+      .then(() => {
+        if (!active) return undefined;
+        setLoading(true);
+        setError(null);
+        return getProductPage(query);
+      })
+      .then((response) => {
+        if (active && response) setResult(response);
+      })
+      .catch((cause: unknown) => {
+        if (!active) return;
+        const message =
+          cause instanceof Error ? cause.message : "Could not load products.";
+        setError(message);
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [queryString, page, category, brand, color, rating, minPrice, maxPrice]);
+
   const updateParam = useCallback(
-    (key: any, value: any) => {
+    (key: string, value: string | number | undefined) => {
       const params = new URLSearchParams(searchParams.toString());
-      if (!value) {
-        params.delete(key);
-      } else {
-        params.set(key, value.toString());
-      }
-      router.push(`/shop?${params.toString()}`);
+      if (value === undefined || value === "") params.delete(key);
+      else params.set(key, String(value));
+      if (key !== "page") params.set("page", "1");
+      router.push(`/shop${params.size ? `?${params.toString()}` : ""}`);
     },
     [router, searchParams],
   );
 
-  // Filter + Sort
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-    if (category) result = result.filter((item) => item.category === category);
-    if (rating) result = result.filter((item) => item.rating >= Number(rating));
-    if (minPrice)
-      result = result.filter((item) => item.price >= Number(minPrice));
-    if (maxPrice)
-      result = result.filter((item) => item.price <= Number(maxPrice));
-
-    switch (sortBy) {
-      case "price-low":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "best-selling":
-        result.sort((a, b) => b.reviews.length - a.reviews.length);
-        break;
-      default:
-        result.sort((a, b) => b.rating - a.rating);
-    }
-    return result;
-  }, [products, category, rating, sortBy, minPrice, maxPrice]);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIdx = (page - 1) * itemsPerPage;
-  const endIdx = startIdx + itemsPerPage;
-  const paginatedProducts = filteredProducts.slice(startIdx, endIdx);
-
-  // Filters handler
   const handleFilterChange = useCallback(
-    (newFilters: any) => {
+    (newFilters: FilterOptions) => {
       const params = new URLSearchParams(searchParams.toString());
-      Object.entries(newFilters).forEach(([key, value]) => {
-        if (key === "priceRange" && Array.isArray(value)) {
-          params.set("minPrice", value[0].toString());
-          params.set("maxPrice", value[1].toString());
-        } else if (!value) {
-          params.delete(key);
-        } else {
-          params.set(key, value.toString());
-        }
-      });
+      for (const key of ["category", "color", "rating", "minPrice", "maxPrice"]) {
+        params.delete(key);
+      }
+      if (newFilters.category) params.set("category", newFilters.category);
+      if (newFilters.color) params.set("color", newFilters.color);
+      if (newFilters.rating) params.set("rating", String(newFilters.rating));
+      if (newFilters.priceRange) {
+        params.set("minPrice", String(newFilters.priceRange[0]));
+        params.set("maxPrice", String(newFilters.priceRange[1]));
+      }
       params.set("page", "1");
       router.push(`/shop?${params.toString()}`);
     },
     [router, searchParams],
   );
 
-  // Reset filters
   const handleResetFilters = useCallback(() => {
-    router.push("/shop");
-  }, [router]);
+    const params = new URLSearchParams(searchParams.toString());
+    for (const key of ["category", "color", "rating", "minPrice", "maxPrice", "page"]) {
+      params.delete(key);
+    }
+    router.push(`/shop${params.size ? `?${params.toString()}` : ""}`);
+  }, [router, searchParams]);
+
+  const filters = useMemo<FilterOptions>(
+    () => ({
+      category,
+      color,
+      rating,
+      priceRange:
+        minPrice || maxPrice
+          ? [Number(minPrice || 0), Number(maxPrice || 2000)]
+          : undefined,
+    }),
+    [category, color, rating, minPrice, maxPrice],
+  );
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <h1 className="text-4xl font-bold text-blue-600 mb-2">
             Shop All Products
           </h1>
           <p className="text-gray-600">
-            Showing {filteredProducts.length} products
+            Showing {result.count} products
           </p>
         </div>
       </section>
 
-      {/* Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col-reverse md:flex-row gap-8">
-          {/* Products */}
           <div className="flex-1">
-            {/* Sort */}
             <div className="flex justify-between mb-6">
               <select
+                aria-label="Sort products"
                 value={sortBy}
-                onChange={(e) => updateParam("sort", e.target.value)}
+                onChange={(event) => updateParam("sort", event.target.value)}
                 className="px-4 py-2 border rounded-lg"
               >
                 <option value="newest">Newest</option>
@@ -147,20 +163,17 @@ export default function ShopPageContent() {
               </select>
             </div>
 
-            {/* Grid */}
             {loading ? (
-              <div
-                className={
-                  viewMode === "grid"
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    : "space-y-4"
-                }
-              >
-                {Array.from({ length: itemsPerPage }).map((_, i) => (
-                  <ProductSkeleton key={i} />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: pageSize }).map((_, index) => (
+                  <ProductSkeleton key={index} />
                 ))}
               </div>
-            ) : paginatedProducts.length > 0 ? (
+            ) : error ? (
+              <div className="py-10 text-center text-red-600" role="alert">
+                {error}
+              </div>
+            ) : result.products.length ? (
               <div
                 className={
                   viewMode === "grid"
@@ -168,7 +181,7 @@ export default function ShopPageContent() {
                     : "space-y-4"
                 }
               >
-                {paginatedProducts.map((product) => (
+                {result.products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -176,26 +189,16 @@ export default function ShopPageContent() {
               <p className="text-center py-10">No products found</p>
             )}
 
-            {/* Pagination */}
             <Pagination
               page={page}
-              totalPages={totalPages}
-              onPageChange={(newPage) => updateParam("page", newPage)}
+              totalPages={result.totalPages}
+              onPageChange={(nextPage) => updateParam("page", nextPage)}
             />
           </div>
-
-          {/* Filters */}
           <aside className="w-full md:w-64">
             <ProductFilters
               onFilterChange={handleFilterChange}
-              currentFilters={{
-                category: category || undefined,
-                rating: rating ? Number(rating) : undefined,
-                priceRange:
-                  minPrice || maxPrice
-                    ? [Number(minPrice || 0), Number(maxPrice || 2000)]
-                    : undefined,
-              }}
+              currentFilters={filters}
               onReset={handleResetFilters}
             />
           </aside>

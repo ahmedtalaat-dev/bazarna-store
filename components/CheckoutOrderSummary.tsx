@@ -42,7 +42,7 @@ export default function CheckoutOrderSummary({
               {/* Product image */}
               <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
                 <Image
-                  src={item.product.thumbnail} // image source
+                  src={item.product.imageCover} // image source
                   alt={item.product.title} // alt text
                   width={64}
                   height={64}

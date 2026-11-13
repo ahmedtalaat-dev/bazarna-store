@@ -25,51 +25,13 @@ export default function ProductPageContent({ id }: { id: string }) {
       try {
         const data = await getProductById(id);
 
-        const transformed = {
-          id: data.id,
-          name: data.title,
-          description: data.description,
-          category: data.category,
-          price: data.price,
-          originalPrice: data.price / (1 - data.discountPercentage / 100),
-          rating: data.rating,
-          reviews: data.reviews?.length || 0,
-          images: data.images,
-          thumbnail: data.thumbnail,
-          colors: data.tags || [],
-          sizes: [],
-          isNew: true,
-          isBestseller: data.rating > 4,
-          specifications: {
-            brand: data.brand,
-            weight: data.weight,
-            warranty: data.warrantyInformation,
-            shipping: data.shippingInformation,
-          },
-          reviews_data: data.reviews?.map((r: any, i: number) => ({
-            id: i,
-            author: r.reviewerName,
-            date: new Date(r.date).toLocaleDateString(),
-            rating: r.rating,
-            text: r.comment,
-          })) || [],
-        };
-
-        setProduct(transformed);
-        setSelectedColor(transformed.colors[0]);
+        setProduct(data);
+        setSelectedColor(data.colors?.[0]);
 
         const allData = await getProducts();
         const related = allData
           .filter((p: any) => p.category === data.category && p.id !== data.id)
-          .slice(0, 4)
-          .map((p: any) => ({
-            id: p.id,
-            name: p.title,
-            price: p.price,
-            rating: p.rating,
-            images: p.images,
-            thumbnail: p.thumbnail,
-          }));
+          .slice(0, 4);
 
         setRelatedProducts(related);
       } catch (err) {
@@ -125,34 +87,38 @@ export default function ProductPageContent({ id }: { id: string }) {
 
   return (
     <div className="min-h-screen bg-white">
-
-      {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-4 text-sm text-gray-600 border-b">
         <Link href="/">Home</Link> /
         <Link href="/shop">Shop</Link> /
         <Link href={`/shop?category=${product.category}`}>{product.category}</Link> /
-        <span className="text-blue-600">{product.name}</span>
+        <span className="text-blue-600">{product.title}</span>
       </div>
 
-      {/* Product */}
       <section className="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-2 gap-12">
         <ImageGallery
           images={
             product.images && product.images.length > 0
               ? product.images
-              : product.thumbnail
-              ? [product.thumbnail]
-              : ['/placeholder.png']
+              : product.imageCover
+                ? [product.imageCover]
+                : ['/placeholder.png']
           }
-          productName={product.title || product.name}
+          productName={product.title}
         />
 
         <div>
-          <h1 className="text-4xl font-bold text-blue-600 mb-4">{product.name}</h1>
+          <h1 className="text-4xl font-bold text-blue-600 mb-4">{product.title}</h1>
 
           <div className="flex items-center gap-2 mb-6">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className={i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'} />
+              <Star
+                key={i}
+                className={
+                  i < Math.floor(product.rating)
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-gray-300'
+                }
+              />
             ))}
             <span>{product.rating}</span>
           </div>
@@ -181,19 +147,17 @@ export default function ProductPageContent({ id }: { id: string }) {
         </div>
       </section>
 
-      {/* Reviews */}
       <section className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Reviews</h2>
-        {product.reviews_data.map((review: any) => (
-          <div key={review.id} className="mb-4 border-b pb-4">
-            <p className="font-semibold">{review.author}</p>
+        {product.reviews?.map((review: any, index: number) => (
+          <div key={`${review.reviewerName}-${index}`} className="mb-4 border-b pb-4">
+            <p className="font-semibold">{review.reviewerName}</p>
             <p className="text-sm text-gray-500">{review.date}</p>
-            <p>{review.text}</p>
+            <p>{review.comment}</p>
           </div>
-        ))}
+        )) || <p className="text-gray-500">No reviews yet.</p>}
       </section>
 
-      {/* Related */}
       {relatedProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-12">
           <h2 className="text-2xl font-bold mb-6">Related Products</h2>

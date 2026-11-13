@@ -18,16 +18,16 @@ export function BestSellers() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const sliderRef = useRef<HTMLDivElement>(null);
-  const totalSlides = 4;
+  const totalSlides = products.length;
 
   // Fetch Products
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getProducts();
+        const data = await getProducts({ sort: "-sold", limit: 4 });
         setProducts(data.slice(0, 4));
       } catch (error) {
-        console.error(error);
+        console.error("Failed to load best-selling products.", error);
       } finally {
         setLoading(false);
       }

@@ -1,262 +1,257 @@
 "use client";
 
-// Imports
+import { useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 import { MapPin } from "lucide-react";
-import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
+import {
+  addAddress,
+  getAddresses,
+  getOrders,
+  removeAddress,
+  updateProfile,
+  type ApiRecord,
+} from "@/lib/api";
 
-// Interfaces
-interface Address {
-  type: string;
-  street: string;
-  city: string;
-  default: boolean;
-}
+type AccountTab = "profile" | "orders" | "addresses";
 
-interface Order {
-  id: string;
-  date: string;
-  total: number;
-  status: string;
-  items: number;
-}
-
-interface UserInfo {
-  label: string;
-  value: string;
-}
-
-// Account Page
 export default function AccountPageContent() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const { user, isAuthenticated, loading, refreshUser } = useAuth();
+  const { addToast } = useToast();
+  const [activeTab, setActiveTab] = useState<AccountTab>("profile");
+  const [orders, setOrders] = useState<ApiRecord[]>([]);
+  const [addresses, setAddresses] = useState<ApiRecord[]>([]);
+  const [saving, setSaving] = useState(false);
+  const [profile, setProfile] = useState({ name: "", email: "", phone: "" });
+  const [address, setAddress] = useState({
+    alias: "",
+    details: "",
+    phone: "",
+    city: "",
+    postalCode: "",
+  });
 
-  // Addresses data
-  const addresses: Address[] = [
-    {
-    type: "Home",
-    street: "15 El Tahrir St, Dokki",
-    city: "Cairo, Egypt",
-    default: true,
-    },
-    {
-    type: "Office",
-    street: "22 El Gomhoria St",
-    city: "Maghagha, Minya, Egypt",
-    default: false,
-   },
-  ];
+  useEffect(() => {
+    if (!user) return;
+    setProfile({
+      name: String(user.name ?? ""),
+      email: String(user.email ?? ""),
+      phone: String(user.phone ?? ""),
+    });
+    Promise.all([getOrders(), getAddresses()])
+      .then(([ordersData, addressData]) => {
+        setOrders(ordersData);
+        setAddresses(addressData);
+      })
+      .catch((error: unknown) =>
+        console.error("Could not load account information.", error),
+      );
+  }, [user]);
 
-  // Orders data
-  const orders: Order[] = [
-    {
-      id: "ORD-001",
-      date: "2026-02-15",
-      total: 299.99,
-      status: "Delivered",
-      items: 2,
-    },
-    {
-      id: "ORD-002",
-      date: "2026-02-10",
-      total: 1299.0,
-      status: "Delivered",
-      items: 1,
-    },
-    {
-      id: "ORD-003",
-      date: "2026-01-28",
-      total: 149.99,
-      status: "Canceled",
-      items: 1,
-    },
-  ];
+  const submitProfile = async (event: FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      const updates: ApiRecord = { name: profile.name, phone: profile.phone };
+      if (profile.email !== String(user?.email ?? "")) {
+        updates.email = profile.email;
+      }
+      await updateProfile(updates);
+      await refreshUser();
+      addToast("Profile updated.", "success");
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : "Could not update profile.", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
 
-  // User data
-  const userInfo: UserInfo[] = [
-    { label: "Full Name", value: "Ahmed Talaat" },
-    { label: "Email Address", value: "ahmed@gmail.com" },
-    { label: "Phone Number", value: "+20 1104894017" },
+  const submitAddress = async (event: FormEvent) => {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      await addAddress(address);
+      setAddresses(await getAddresses());
+      setAddress({ alias: "", details: "", phone: "", city: "", postalCode: "" });
+      addToast("Address saved.", "success");
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : "Could not save address.", "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteAddress = async (id: string) => {
+    try {
+      await removeAddress(id);
+      setAddresses((items) => items.filter((item) => String(item._id) !== id));
+      addToast("Address removed.", "info");
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : "Could not remove address.", "error");
+    }
+  };
+
+  if (loading) {
+    return <p className="min-h-screen flex items-center justify-center">Loading account...</p>;
+  }
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
+        <h1 className="text-3xl font-bold text-blue-600">Sign in to your account</h1>
+        <Link href="/login?next=%2Faccount" className="px-6 py-3 bg-blue-600 text-white rounded-lg">
+          Sign In
+        </Link>
+      </div>
+    );
+  }
+
+  const tabs: { id: AccountTab; label: string }[] = [
+    { id: "profile", label: "Profile Information" },
+    { id: "orders", label: "Order History" },
+    { id: "addresses", label: "Saved Addresses" },
   ];
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <h1 className="text-4xl font-bold text-blue-600">My Account</h1>
         </div>
       </section>
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex gap-8 flex-col md:flex-row">
-          {/* Sidebar */}
-          <aside className="w-full md:w-64 flex-shrink-0">
-            <div className="space-y-2">
-              {/* Profile Information Tab Button */}
+          <aside className="w-full md:w-64 flex-shrink-0 space-y-2">
+            {tabs.map((tab) => (
               <button
+                key={tab.id}
                 role="tab"
-                onClick={() => setActiveTab("profile")}
+                aria-selected={activeTab === tab.id}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
-                  activeTab === "profile"
+                  activeTab === tab.id
                     ? "bg-blue-50 text-blue-600"
                     : "text-gray-700 hover:bg-gray-50"
                 }`}
               >
-                Profile Information
+                {tab.label}
               </button>
-              {/* Order History Tab Button */}
-              <button
-                role="tab"
-                onClick={() => setActiveTab("orders")}
-                className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
-                  activeTab === "orders"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                Order History
-              </button>
-              {/* Saved Addresses Tab Button */}
-              <button
-                role="tab"
-                onClick={() => setActiveTab("addresses")}
-                className={`w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
-                  activeTab === "addresses"
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                Saved Addresses
-              </button>
-            </div>
+            ))}
+            <Link href="/profile" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+              Profile Page
+            </Link>
+            <Link href="/orders" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+              All Orders
+            </Link>
           </aside>
 
-          {/* Content */}
           <div className="flex-1">
-            {/* Profile Information Tab */}
             {activeTab === "profile" && (
-              <div className="bg-gray-50 rounded-lg p-8">
-                <h2 className="text-2xl font-bold text-blue-600 mb-8">
-                  Profile Information
-                </h2>
-
-                <div className="space-y-6 max-w-2xl">
-                  {userInfo.map((item, index) => (
-                    <div key={index} className="bg-white rounded-lg p-6">
-                      <p className="text-sm text-gray-600 mb-2">{item.label}</p>
-                      <p className="text-xl font-semibold text-blue-600">
-                        {item.value}
-                      </p>
-                    </div>
-                  ))}
-                  <button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
-                    Edit Profile
-                  </button>
-                </div>
-              </div>
+              <form onSubmit={submitProfile} className="bg-gray-50 rounded-lg p-8 space-y-5">
+                <h2 className="text-2xl font-bold text-blue-600">Profile Information</h2>
+                {(["name", "email", "phone"] as const).map((field) => (
+                  <label key={field} className="block">
+                    <span className="block text-sm text-gray-600 mb-2 capitalize">{field}</span>
+                    <input
+                      type={field === "email" ? "email" : "text"}
+                      required={field !== "phone"}
+                      value={profile[field]}
+                      onChange={(event) =>
+                        setProfile((previous) => ({
+                          ...previous,
+                          [field]: event.target.value,
+                        }))
+                      }
+                      className="w-full rounded-lg border px-4 py-3"
+                    />
+                  </label>
+                ))}
+                <button disabled={saving} className="px-6 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+                  {saving ? "Saving..." : "Save Profile"}
+                </button>
+                <p className="text-sm text-gray-600">
+                  Signed in as {String(user?.role ?? "user")}.
+                </p>
+              </form>
             )}
 
-            {/* Order History Tab */}
             {activeTab === "orders" && (
               <div className="bg-gray-50 rounded-lg p-8">
-                <h2 className="text-2xl font-bold text-blue-600 mb-8">
-                  Order History
-                </h2>
-
-                <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div
-                      key={order.id}
-                      className="bg-white rounded-lg p-6 flex items-center justify-between"
-                    >
-                      <div>
-                        <p className="font-semibold text-blue-600 mb-1">
-                          {order.id}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {order.date} • {order.items} item
-                          {order.items > 1 ? "s" : ""}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-blue-600 mb-1">
-                          ${order.total}
-                        </p>
-                        <span
-                          className={`inline-block px-3 py-1 text-xs font-semibold rounded-full ${
-                            order.status.toLowerCase() === "delivered"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {order.status}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-2xl font-bold text-blue-600">Order History</h2>
+                  <Link href="/orders" className="text-blue-600 hover:underline">View all</Link>
                 </div>
+                {orders.length ? (
+                  <div className="space-y-4">
+                    {orders.slice(0, 5).map((order) => (
+                      <Link
+                        key={String(order._id)}
+                        href={`/orders?id=${encodeURIComponent(String(order._id))}`}
+                        className="bg-white rounded-lg p-6 flex items-center justify-between gap-4"
+                      >
+                        <div>
+                          <p className="font-semibold text-blue-600">{String(order._id)}</p>
+                          <p className="text-sm text-gray-600">
+                            {new Date(String(order.createdAt ?? "")).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold text-blue-600">${Number(order.totalOrderPrice ?? 0).toFixed(2)}</p>
+                          <span className="text-sm text-gray-600">
+                            {order.isDelivered ? "Delivered" : order.isPaid ? "Paid" : "Processing"}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600">You have no orders yet.</p>
+                )}
               </div>
             )}
 
-            {/* Saved Addresses Tab */}
             {activeTab === "addresses" && (
               <div className="bg-gray-50 rounded-lg p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-blue-600">
-                    Saved Addresses
-                  </h2>
-                  <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors">
-                    Add New Address
+                <h2 className="text-2xl font-bold text-blue-600 mb-6">Saved Addresses</h2>
+                <form onSubmit={submitAddress} className="grid md:grid-cols-2 gap-3 mb-8">
+                  {(["alias", "details", "phone", "city", "postalCode"] as const).map((field) => (
+                    <input
+                      key={field}
+                      required
+                      aria-label={field}
+                      placeholder={field === "postalCode" ? "Postal code" : field[0].toUpperCase() + field.slice(1)}
+                      value={address[field]}
+                      onChange={(event) =>
+                        setAddress((previous) => ({
+                          ...previous,
+                          [field]: event.target.value,
+                        }))
+                      }
+                      className="rounded-lg border px-4 py-3"
+                    />
+                  ))}
+                  <button disabled={saving} className="px-4 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+                    Add Address
                   </button>
-                </div>
-
-                <div className="space-y-4 max-w-2xl">
-                  {addresses.map((address, index) => (
-                    <div
-                      key={index}
-                      className={`bg-white rounded-lg p-6 border-l-4 ${
-                        address.default ? "border-blue-600" : "border-gray-300"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-start gap-3">
-                          <MapPin
-                            className={`w-5 h-5 flex-shrink-0 mt-1 ${
-                              address.default
-                                ? "text-blue-600"
-                                : "text-gray-400"
-                            }`}
-                          />
-                          <div>
-                            <p className="font-semibold text-blue-600 mb-1">
-                              {address.type}
-                            </p>
-                            <p className="text-gray-600">{address.street}</p>
-                            <p className="text-gray-600">{address.city}</p>
-                          </div>
+                </form>
+                <div className="space-y-4">
+                  {addresses.map((item) => (
+                    <div key={String(item._id)} className="bg-white rounded-lg p-6 flex items-start justify-between gap-4">
+                      <div className="flex gap-3">
+                        <MapPin className="w-5 h-5 mt-1 text-blue-600" />
+                        <div>
+                          <p className="font-semibold text-blue-600">{String(item.alias ?? "Address")}</p>
+                          <p className="text-gray-600">{String(item.details ?? "")}</p>
+                          <p className="text-gray-600">{String(item.city ?? "")} {String(item.postalCode ?? "")}</p>
+                          <p className="text-gray-600">{String(item.phone ?? "")}</p>
                         </div>
-                        {address.default && (
-                          <span className="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
-                            Default
-                          </span>
-                        )}
                       </div>
-                      <div className="flex gap-4 text-sm">
-                        <button
-                          aria-label="Edit address"
-                          className="text-blue-600 hover:text-blue-700 font-medium"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          aria-label="Delete address"
-                          className="text-red-600 hover:text-red-700 font-medium"
-                        >
-                          Delete
-                        </button>
-                      </div>
+                      <button onClick={() => void deleteAddress(String(item._id))} className="text-red-600">
+                        Remove
+                      </button>
                     </div>
                   ))}
+                  {!addresses.length && <p className="text-gray-600">No saved addresses yet.</p>}
                 </div>
               </div>
             )}

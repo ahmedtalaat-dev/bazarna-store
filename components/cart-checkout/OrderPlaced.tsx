@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 
 // Props interface
 interface OrderPlacedProps {
+  orderId: string;
   subtotal: number;
   shipping: number;
   tax: number;
@@ -12,6 +13,7 @@ interface OrderPlacedProps {
 
 // Main Page
 export default function OrderPlaced({
+  orderId,
   subtotal,
   shipping,
   tax,
@@ -45,14 +47,11 @@ export default function OrderPlaced({
           <p className="text-gray-600 mb-2">Order ID:</p>
 
           {/* Generated Random Order ID */}
-          <p className="text-2xl font-bold text-blue-600 mb-6">
-            #ORD-{Math.random().toString(36).substr(2, 9).toUpperCase()}
-          </p>
+          <p className="text-2xl font-bold text-blue-600 mb-6">{orderId}</p>
 
           {/* Info message */}
           <p className="text-gray-600 mb-4 pb-4 border-b">
-            You will receive a confirmation email shortly with tracking
-            information.
+            Your Cash on Delivery order has been received.
           </p>
 
           {/* Price details */}
@@ -93,6 +92,13 @@ export default function OrderPlaced({
         {/* Action buttons */}
         <div className="flex gap-4 flex-col sm:flex-row">
           
+          <Link
+            href="/orders"
+            className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors text-center"
+          >
+            View Orders
+          </Link>
+
           {/* Track order */}
           <Link
             href="/order-tracking"

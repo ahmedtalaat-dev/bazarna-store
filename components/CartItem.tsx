@@ -27,7 +27,7 @@ export default function CartItem({
       <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
         <Image
           src={
-            item.product.images?.[0] || item.product.thumbnail || fallbackImage
+            item.product.images?.[0] || item.product.imageCover || fallbackImage
           }
           alt={item.product.title}
           width={100}

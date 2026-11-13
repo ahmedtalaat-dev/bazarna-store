@@ -1,35 +1,47 @@
 "use client";
 
-// Imports
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { createCashOrder } from "@/lib/api";
 import CheckoutForm from "@/components/cart-checkout/CheckoutForm";
 import PaymentForm from "@/components/cart-checkout/PaymentForm";
 import CheckoutOrderSummary from "@/components/cart-checkout/CheckoutOrderSummary";
 import OrderPlaced from "@/components/cart-checkout/OrderPlaced";
 
-// Interfaces
-interface FinalOrder {
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
+interface ShippingForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  city: string;
+  postalCode: string;
 }
 
 export default function CheckoutPageContent() {
-  // Get cart data and toast notifications
-  const { cart, cartTotal, clearCart } = useEcommerce();
+  const router = useRouter();
+  const {
+    cart,
+    cartId,
+    cartTotal,
+    cartDiscountedTotal,
+    refreshCommerce,
+    loading: commerceLoading,
+  } = useEcommerce();
+  const { user, loading: authLoading } = useAuth();
   const { addToast } = useToast();
-
-  // States
-  const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
-  const [finalOrder, setFinalOrder] = useState<FinalOrder | null>(null);
-  const [formData, setFormData] = useState({
+  const [orderId, setOrderId] = useState("");
+  const [confirmedTotals, setConfirmedTotals] = useState<{
+    subtotal: number;
+    total: number;
+  } | null>(null);
+  const [formData, setFormData] = useState<ShippingForm>({
     firstName: "",
     lastName: "",
     email: "",
@@ -37,74 +49,98 @@ export default function CheckoutPageContent() {
     address: "",
     city: "",
     postalCode: "",
-    cardNumber: "",
-    cardName: "",
-    cardExpiry: "",
-    cardCVC: "",
   });
 
-  // Calculate totals
-  const subtotal = cartTotal;
-  const shipping = subtotal > 50 ? 0 : 10;
-  const tax = Math.round(subtotal * 0.1 * 100) / 100;
-  const total = subtotal + shipping + tax;
-
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
+  useEffect(() => {
+    if (!user) return;
+    const nameParts = String(user.name ?? "").split(" ");
+    setFormData((previous) => ({
+      ...previous,
+      firstName: previous.firstName || nameParts[0] || "",
+      lastName: previous.lastName || nameParts.slice(1).join(" "),
+      email: previous.email || String(user.email ?? ""),
+      phone: previous.phone || String(user.phone ?? ""),
     }));
+  }, [user]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace("/login?next=%2Fcheckout");
+    }
+  }, [authLoading, user, router]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((previous) => ({ ...previous, [name]: value }));
   };
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate required fields
-    if (
-      !formData.firstName ||
-      !formData.email ||
-      !formData.address ||
-      !formData.city ||
-      !formData.postalCode
-    ) {
-      addToast("Please fill in all required fields", "error");
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!cartId || cart.length === 0) {
+      addToast("Your cart is empty or not synchronized. Please review it before checkout.", "error");
       return;
     }
-
-    if (paymentMethod === "card") {
-      if (
-        !formData.cardNumber ||
-        !formData.cardName ||
-        !formData.cardExpiry ||
-        !formData.cardCVC
-      ) {
-        addToast("Please fill in all payment details", "error");
-        return;
-      }
-    }
-
+    if (isProcessing) return;
     setIsProcessing(true);
-
-    // Simulate payment processing
-    setTimeout(() => {
-      setFinalOrder({
-    subtotal,
-    shipping,
-    tax,
-    total,
-  });
-      clearCart();
-      setOrderPlaced(true);
-      setIsProcessing(false);
+    try {
+      const subtotal = cartTotal;
+      const total = cartDiscountedTotal ?? subtotal;
+      const payload = await createCashOrder(cartId, {
+        details: `${formData.firstName} ${formData.lastName}`.trim()
+          ? `${formData.firstName} ${formData.lastName}: ${formData.address}`
+          : formData.address,
+        phone: formData.phone,
+        city: formData.city,
+        postalCode: formData.postalCode,
+      });
+      const order = payload.data as Record<string, unknown> | undefined;
+      const createdOrderId = String(order?._id ?? "");
+      if (!createdOrderId) {
+        throw new Error("The API did not return the created order.");
+      }
+      setConfirmedTotals({ subtotal, total });
+      setOrderId(createdOrderId);
+      await refreshCommerce();
       addToast("Order placed successfully!", "success");
-    }, 2000);
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : "Could not place your order.",
+        "error",
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  // Show empty cart message if cart is empty
-  if (cart.length === 0 && !orderPlaced) {
+  if (orderId && confirmedTotals) {
+    return (
+      <OrderPlaced
+        orderId={orderId}
+        subtotal={confirmedTotals.subtotal}
+        shipping={0}
+        tax={0}
+        total={confirmedTotals.total}
+      />
+    );
+  }
+
+  if (authLoading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Preparing checkout...</p>
+      </div>
+    );
+  }
+
+  if (!cart.length && commerceLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-600">Syncing your cart...</p>
+      </div>
+    );
+  }
+
+  if (!cart.length) {
     return (
       <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 py-20 text-center">
@@ -126,71 +162,40 @@ export default function CheckoutPageContent() {
     );
   }
 
-  // Show order confirmation page
-  if (orderPlaced && finalOrder) {
-    return (
-      <OrderPlaced
-      subtotal={finalOrder.subtotal}
-      shipping={finalOrder.shipping}
-      tax={finalOrder.tax}
-      total={finalOrder.total}
-    />
-    );
-  }
+  const subtotal = cartTotal;
+  const total = cartDiscountedTotal ?? subtotal;
 
-  // Main checkout page
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <h1 className="text-4xl font-bold text-blue-600">Checkout</h1>
         </div>
       </section>
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
           <div className="lg:col-span-2">
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Shipping Information */}
               <CheckoutForm
                 formData={formData}
                 handleInputChange={handleInputChange}
               />
-
-              {/* Payment Method */}
-              <PaymentForm
-                paymentMethod={paymentMethod}
-                setPaymentMethod={setPaymentMethod}
-                formData={{
-                  cardName: formData.cardName,
-                  cardNumber: formData.cardNumber,
-                  cardExpiry: formData.cardExpiry,
-                  cardCVC: formData.cardCVC,
-                }}
-                handleInputChange={handleInputChange}
-              />
-
-              {/* Place Order Button */}
+              <PaymentForm />
               <button
                 type="submit"
-                disabled={isProcessing}
-                aria-busy="true"
+                disabled={isProcessing || !cartId}
+                aria-busy={isProcessing}
                 className="w-full px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-bold text-lg transition-colors"
               >
-                {isProcessing ? "Processing..." : "Place Order"}
+                {isProcessing ? "Placing Order..." : "Place Order"}
               </button>
             </form>
           </div>
-
-          {/* Order Summary */}
           <CheckoutOrderSummary
             cart={cart}
             subtotal={subtotal}
-            shipping={shipping}
-            tax={tax}
+            shipping={0}
+            tax={0}
             total={total}
           />
         </div>

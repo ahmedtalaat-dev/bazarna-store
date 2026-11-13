@@ -22,6 +22,7 @@ export default function ProductPageContent({ id }: { id: string }) {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState<string | undefined>();
 
   // Fetch Product
   useEffect(() => {
@@ -30,10 +31,14 @@ export default function ProductPageContent({ id }: { id: string }) {
         const data: Product = await getProductById(id);
 
         setProduct(data);
+        setSelectedColor(data.colors?.[0]);
 
-        const allData = await getProducts();
-        const related = (allData as Product[])
-          .filter((p) => p.category === data.category && p.id !== data.id);
+        const allData = await getProducts({
+          ...(data.categoryId ? { category: data.categoryId } : {}),
+          limit: 5,
+          sort: "-sold",
+        });
+        const related = allData.filter((p) => p.id !== data.id).slice(0, 4);
 
         setRelatedProducts(related);
       } catch (err) {
@@ -76,19 +81,39 @@ export default function ProductPageContent({ id }: { id: string }) {
 
   // Handle add to cart
   const handleAddToCart = () => {
-    addToCart(product, quantity);
-    addToast(`Added ${quantity} to cart!`, "success");
-    setQuantity(1);
+    void addToCart(product, quantity, selectedColor)
+      .then(() => {
+        addToast(`Added ${quantity} to cart!`, "success");
+        setQuantity(1);
+      })
+      .catch((error: unknown) =>
+        addToast(
+          error instanceof Error ? error.message : "Could not add this item to cart.",
+          "error",
+        ),
+      );
   };
 
   // Handle wishlist
   const handleWishlist = () => {
     if (inWishlist) {
-      removeFromWishlist(product.id);
-      addToast("Removed from wishlist", "info");
+      void removeFromWishlist(product.id)
+        .then(() => addToast("Removed from wishlist", "info"))
+        .catch((error: unknown) =>
+          addToast(
+            error instanceof Error ? error.message : "Could not update your wishlist.",
+            "error",
+          ),
+        );
     } else {
-      addToWishlist(product);
-      addToast("Added to wishlist!", "success");
+      void addToWishlist(product)
+        .then(() => addToast("Added to wishlist!", "success"))
+        .catch((error: unknown) =>
+          addToast(
+            error instanceof Error ? error.message : "Could not update your wishlist.",
+            "error",
+          ),
+        );
     }
   };
 
@@ -110,8 +135,8 @@ export default function ProductPageContent({ id }: { id: string }) {
           images={
             product.images && product.images.length > 0
               ? product.images
-              : product.thumbnail
-                ? [product.thumbnail]
+              : product.imageCover
+                ? [product.imageCover]
                 : ["/placeholder.png"]
           }
           productName={product.title || product.title}
@@ -141,10 +166,35 @@ export default function ProductPageContent({ id }: { id: string }) {
           {/* Product price */}
           <div className="mb-6">
             <span className="text-3xl font-bold">${product.price}</span>
+            {product.originalPrice && (
+              <span className="ml-3 text-gray-500 line-through">
+                ${product.originalPrice}
+              </span>
+            )}
           </div>
 
           {/* Product description */}
           <p className="mb-6">{product.description}</p>
+
+          {product.colors?.length ? (
+            <label className="mb-6 block">
+              <span className="block mb-2 font-medium">Color</span>
+              <select
+                value={selectedColor || ""}
+                onChange={(event) => setSelectedColor(event.target.value)}
+                className="rounded-lg border px-4 py-2"
+              >
+                {product.colors.map((color) => (
+                  <option key={color} value={color}>
+                    {color}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <p className="mb-4 text-sm text-gray-600">
+            {product.stock ? `${product.stock} in stock` : "Currently out of stock"}
+          </p>
 
           {/* Actions */}
           <div className="mb-6 flex gap-4">
@@ -157,7 +207,10 @@ export default function ProductPageContent({ id }: { id: string }) {
             <span>{quantity}</span>
             <button
               aria-label="Increase quantity"
-              onClick={() => setQuantity(quantity + 1)}
+              disabled={quantity >= (product.stock ?? 0)}
+              onClick={() =>
+                setQuantity(Math.min(product.stock ?? quantity, quantity + 1))
+              }
             >
               +
             </button>
@@ -167,9 +220,10 @@ export default function ProductPageContent({ id }: { id: string }) {
           <div className="flex gap-4 mb-8">
             <button
               onClick={handleAddToCart}
+              disabled={!product.stock || quantity > product.stock}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg"
             >
-              Add to Cart
+              {product.stock ? "Add to Cart" : "Out of Stock"}
             </button>
             <button onClick={handleWishlist}>
               <Heart

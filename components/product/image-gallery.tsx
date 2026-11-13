@@ -44,6 +44,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
           alt={productName || "Product image"}
           width={600}
           height={600}
+          unoptimized
           className={`w-full h-95 object-cover transition-transform duration-300 ${
             isZoomed ? "scale-150" : "scale-100"
           }`}
@@ -73,7 +74,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
         )}
       </div>
 
-      {/* Thumbnails */}
+      {/* imageCovers */}
       {safeImages.length > 1 && (
         <div className="grid grid-cols-4 gap-2">
           {safeImages.map((img, i) => (
@@ -89,6 +90,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
                 alt={`${productName} ${i}`}
                 width={100}
                 height={100}
+                unoptimized
                 className="object-cover w-full h-full"
               />
             </button>

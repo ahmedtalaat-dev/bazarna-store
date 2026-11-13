@@ -3,12 +3,14 @@
 // Imports
 import { ChevronDown, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { getCategories, type ApiRecord } from '@/lib/api';
 
 // Filter interface
 export interface FilterOptions {
   category?: string;
   priceRange?: [number, number];
   rating?: number;
+  color?: string;
 }
 
 // Props interface
@@ -20,11 +22,27 @@ interface ProductFiltersProps {
 
 // Main Page
 export function ProductFilters({ onFilterChange, currentFilters, onReset }: ProductFiltersProps) {
+  const [categories, setCategories] = useState<ApiRecord[]>([]);
+  const [localColor, setLocalColor] = useState(currentFilters.color || '');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     category: true,
     price: true,
     rating: true,
   });
+
+  useEffect(() => {
+    let active = true;
+    getCategories()
+      .then((items) => {
+        if (active) setCategories(items);
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to load product categories', error);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Local state for price range to prevent excessive re-renders
   const [localPriceRange, setLocalPriceRange] = useState<[number, number]>(
@@ -33,11 +51,11 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
 
   // Update local price range when currentFilters change (e.g. on reset)
   useEffect(() => {
-    if (currentFilters.priceRange) {
-      setLocalPriceRange(currentFilters.priceRange);
-    } else {
-      setLocalPriceRange([0, 2000]);
-    }
+    const timer = setTimeout(
+      () => setLocalPriceRange(currentFilters.priceRange || [0, 2000]),
+      0,
+    );
+    return () => clearTimeout(timer);
   }, [currentFilters.priceRange]);
 
   // Debounce price changes
@@ -52,7 +70,25 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [localPriceRange, onFilterChange]);
+  }, [localPriceRange, currentFilters, onFilterChange]);
+
+  useEffect(() => {
+    const timer = setTimeout(
+      () => setLocalColor(currentFilters.color || ''),
+      0,
+    );
+    return () => clearTimeout(timer);
+  }, [currentFilters.color]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const color = localColor.trim();
+      if (color !== (currentFilters.color || '')) {
+        onFilterChange({ ...currentFilters, color: color || undefined });
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [localColor, currentFilters, onFilterChange]);
 
   // Toggle section
   const toggleSection = (section: string) => {
@@ -63,7 +99,6 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
   };
 
   // Categories & Ratings
-  const categories = ['beauty', 'fragrances', 'furniture', 'groceries'];
   const ratings = [5, 4, 3, 2, 1];
 
   return (
@@ -94,19 +129,58 @@ export function ProductFilters({ onFilterChange, currentFilters, onReset }: Prod
         </button>
         {expandedSections.category && (
           <div className="border-t p-4 space-y-3">
-            {categories.map((cat) => (
-              <label key={cat} className="flex items-center gap-3 cursor-pointer group">
+            {categories.map((category) => (
+              <label
+                key={String(category._id)}
+                className="flex items-center gap-3 cursor-pointer group"
+              >
                 <input
                   type="radio"
                   name="category"
-                  value={cat}
-                  checked={currentFilters.category === cat}
-                  onChange={() => onFilterChange({ ...currentFilters, category: cat })}
+                  value={String(category._id)}
+                  checked={currentFilters.category === String(category._id)}
+                  onChange={() =>
+                    onFilterChange({
+                      ...currentFilters,
+                      category: String(category._id),
+                    })
+                  }
                   className="w-4 h-4 accent-blue-600"
                 />
-                <span className="text-gray-700 group-hover:text-blue-600">{cat}</span>
+                <span className="text-gray-700 group-hover:text-blue-600">
+                  {String(category.name ?? '')}
+                </span>
               </label>
             ))}
+          </div>
+        )}
+      </div>
+
+      <div className="border rounded-lg">
+        <button
+          onClick={() => toggleSection('color')}
+          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors font-semibold text-blue-600"
+        >
+          Color
+          <ChevronDown
+            className={`w-5 h-5 transition-transform ${
+              expandedSections.color ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+        {expandedSections.color && (
+          <div className="border-t p-4">
+            <label htmlFor="product-color-filter" className="sr-only">
+              Filter by color
+            </label>
+            <input
+              id="product-color-filter"
+              type="text"
+              value={localColor}
+              onChange={(event) => setLocalColor(event.target.value)}
+              placeholder="Enter a color"
+              className="w-full rounded-lg border px-3 py-2 text-sm"
+            />
           </div>
         )}
       </div>

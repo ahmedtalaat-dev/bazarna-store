@@ -1,9 +1,10 @@
 // Imports
 import Image from "next/image";
+import type { CartItem } from "@/contexts/EcommerceContext";
 
 // Props interface
 interface OrderSummaryProps {
-  cart: any[];
+  cart: CartItem[];
   subtotal: number;
   shipping: number;
   tax: number;
@@ -31,16 +32,17 @@ export default function CheckoutOrderSummary({
           {cart.map((item) => (
             // Single item
             <div
-              key={item.product.id}
+              key={item.itemId || `${item.product.id}-${item.color || "default"}`}
               className="flex gap-3 pb-4 border-b last:border-b-0"
             >
               {/* Product image */}
               <div className="w-16 h-16 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
                 <Image
-                  src={item.product.thumbnail || "/placeholder.png"}
+                  src={item.product.imageCover || "/placeholder.png"}
                   alt={item.product.title || "Product"}
                   width={64}
                   height={64}
+                  unoptimized
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -57,7 +59,7 @@ export default function CheckoutOrderSummary({
 
                 {/* Item total price */}
                 <p className="font-semibold text-blue-600 text-sm">
-                  ${(item.product.price * item.quantity).toFixed(2)}
+                  ${((item.unitPrice ?? item.product.price) * item.quantity).toFixed(2)}
                 </p>
               </div>
             </div>

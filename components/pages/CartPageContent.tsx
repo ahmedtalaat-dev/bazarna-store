@@ -7,31 +7,67 @@ import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useToast } from "@/contexts/ToastContext";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Cart Page
 export default function CartPageContent() {
   // Get cart data and functions from hooks
-  const { cart, removeFromCart, updateCartQuantity, cartTotal, clearCart } =
+  const {
+    cart,
+    removeFromCart,
+    updateCartQuantity,
+    cartTotal,
+    cartDiscountedTotal,
+    clearCart,
+    loading,
+    syncError,
+    applyCoupon,
+  } =
     useEcommerce();
   const { addToast } = useToast();
+  const { user } = useAuth();
+  const [coupon, setCoupon] = useState("");
+  const [busy, setBusy] = useState(false);
 
   // Remove item from cart
-  const handleRemove = (productId: string) => {
-    removeFromCart(productId);
-    addToast("Removed from cart", "info");
+  const handleRemove = async (itemId: string) => {
+    try {
+      await removeFromCart(itemId);
+      addToast("Removed from cart", "info");
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : "Could not remove item.", "error");
+    }
   };
 
   // Update item quantity
-  const handleQuantityChange = (productId: string, quantity: number) => {
+  const handleQuantityChange = async (productId: string, quantity: number) => {
     if (quantity < 1) return;
-    updateCartQuantity(productId, quantity);
+    try {
+      await updateCartQuantity(productId, quantity);
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : "Could not update quantity.", "error");
+    }
   };
 
-  // Calculate prices
   const subtotal = cartTotal;
-  const shipping = subtotal > 50 ? 0 : 10;
-  const tax = Math.round(subtotal * 0.1 * 100) / 100;
-  const total = subtotal + shipping + tax;
+  const shipping = 0;
+  const tax = 0;
+  const total = cartDiscountedTotal ?? subtotal;
+
+  const handleCoupon = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!coupon.trim()) return;
+    setBusy(true);
+    try {
+      await applyCoupon(coupon.trim());
+      addToast("Coupon applied successfully.", "success");
+    } catch (error) {
+      addToast(error instanceof Error ? error.message : "Could not apply coupon.", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -44,8 +80,16 @@ export default function CartPageContent() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
+        {syncError && (
+          <p className="mb-6 text-red-600" role="alert">{syncError}</p>
+        )}
+        {loading && (
+          <p className="mb-6 text-gray-500" role="status">Syncing your cart...</p>
+        )}
         {/* Empty Cart */}
-        {cart.length === 0 ? (
+        {loading && cart.length === 0 ? (
+          <p className="py-16 text-center text-gray-500">Loading your cart...</p>
+        ) : cart.length === 0 ? (
           <div className="text-center py-20">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">
               Your cart is empty
@@ -76,7 +120,7 @@ export default function CartPageContent() {
               <div className="space-y-4">
                 {cart.map((item) => (
                   <CartItem
-                    key={item.product.id}
+                    key={item.itemId || `${item.product.id}-${item.color || "default"}`}
                     item={item}
                     handleQuantityChange={handleQuantityChange}
                     handleRemove={handleRemove}
@@ -87,15 +131,37 @@ export default function CartPageContent() {
               {/* Clear Cart Button */}
               <button
                 onClick={() => {
-                  clearCart();
-                  addToast("Cart cleared", "info");
+                  void clearCart()
+                    .then(() => addToast("Cart cleared", "info"))
+                    .catch((error: unknown) =>
+                      addToast(
+                        error instanceof Error ? error.message : "Could not clear cart.",
+                        "error",
+                      ),
+                    );
                 }}
                 className="mt-6 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors font-medium"
               >
                 Clear Cart
               </button>
+              <form onSubmit={handleCoupon} className="mt-6 flex gap-2">
+                <input
+                  aria-label="Coupon code"
+                  value={coupon}
+                  onChange={(event) => setCoupon(event.target.value)}
+                  placeholder="Coupon code"
+                  className="min-w-0 flex-1 border rounded-lg px-4 py-2"
+                />
+                <button
+                  type="submit"
+                  disabled={!user || busy}
+                  title={!user ? "Sign in to apply a coupon" : undefined}
+                  className="px-4 py-2 border rounded-lg text-blue-600 disabled:opacity-50"
+                >
+                  {busy ? "Applying..." : "Apply"}
+                </button>
+              </form>
             </div>
-
             {/* Order Summary Sidebar */}
             <OrderSummary
               subtotal={subtotal}

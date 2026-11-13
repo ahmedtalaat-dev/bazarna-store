@@ -42,7 +42,7 @@ export default function OrderSummary({
 
           {/* Tax */}
           <div className="flex justify-between text-gray-700">
-            <span>Tax (10%)</span>
+            <span>Tax</span>
             <span>${tax.toFixed(2)}</span>
           </div>
         </div>

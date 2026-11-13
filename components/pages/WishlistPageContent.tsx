@@ -21,15 +21,30 @@ export default function WishlistPageContent() {
   const itemsPerPage = 8;
 
   // Remove item from wishlist
-  const handleRemove = (productId: string) => {
-    removeFromWishlist(productId);
-    addToast("Removed from wishlist", "info");
+  const handleRemove = async (productId: string) => {
+    try {
+      await removeFromWishlist(productId);
+      addToast("Removed from wishlist", "info");
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : "Could not update your wishlist.",
+        "error",
+      );
+    }
   };
 
   // Add item to cart
-  const handleAddToCart = (product: Product) => {
-    addToCart(product, 1);
-    addToast("Added to cart!", "success");
+  const handleAddToCart = async (product: Product) => {
+    try {
+      await addToCart(product, 1);
+      await removeFromWishlist(product.id);
+      addToast("Added to cart!", "success");
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : "Could not add this item to cart.",
+        "error",
+      );
+    }
   };
 
   // Placeholder if image missing
@@ -95,12 +110,13 @@ export default function WishlistPageContent() {
                     <Image
                       src={
                         item.product.images?.[0] ||
-                        item.product.thumbnail ||
+                        item.product.imageCover ||
                         fallbackImage
                       }
                       alt={item.product.title || "Product"}
                       width={300}
                       height={300}
+                      unoptimized
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                     />
                     {/* Remove button */}

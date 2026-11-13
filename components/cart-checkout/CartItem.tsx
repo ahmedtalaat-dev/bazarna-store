@@ -2,10 +2,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, Plus, Minus } from "lucide-react";
+import type { CartItem as CartLine } from "@/contexts/EcommerceContext";
 
 // Interfaces
 interface CartItemProps {
-  item: any;
+  item: CartLine;
   handleQuantityChange: (productId: string, quantity: number) => void;
   handleRemove: (productId: string) => void;
 }
@@ -21,18 +22,19 @@ export default function CartItem({
 
   return (
     <div
-      key={item.product.id}
+      key={item.itemId || `${item.product.id}-${item.color || "default"}`}
       className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition-shadow"
     >
       {/* Product Image */}
       <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
         <Image
           src={
-            item.product.images?.[0] || item.product.thumbnail || fallbackImage
+            item.product.images?.[0] || item.product.imageCover || fallbackImage
           }
           alt={item.product.title || "Product image"}
           width={100}
           height={100}
+          unoptimized
           className="w-full h-full object-cover"
         />
       </div>
@@ -45,13 +47,16 @@ export default function CartItem({
         >
           {item.product.title}
         </Link>
-        <p className="text-sm text-gray-500 mt-1">${item.product.price}</p>
+        <p className="text-sm text-gray-500 mt-1">
+          ${item.unitPrice ?? item.product.price}
+          {item.color ? ` · ${item.color}` : ""}
+        </p>
       </div>
 
       {/* Quantity & Price */}
       <div className="flex flex-col items-end gap-4">
         <div className="text-lg font-semibold text-blue-600">
-          ${(item.product.price * item.quantity).toFixed(2)}
+          ${((item.unitPrice ?? item.product.price) * item.quantity).toFixed(2)}
         </div>
 
         {/* Quantity Controls */}
@@ -59,7 +64,10 @@ export default function CartItem({
           {/* Decrease quantity button */}
           <button
             onClick={() =>
-              handleQuantityChange(item.product.id, item.quantity - 1)
+              handleQuantityChange(
+                item.itemId || item.product.id,
+                item.quantity - 1,
+              )
             }
             aria-label="Decrease quantity" // Accessible label for screen readers
             disabled={item.quantity === 1} // Prevent going below 1
@@ -79,7 +87,10 @@ export default function CartItem({
           {/* Increase quantity button */}
           <button
             onClick={() =>
-              handleQuantityChange(item.product.id, item.quantity + 1)
+              handleQuantityChange(
+                item.itemId || item.product.id,
+                item.quantity + 1,
+              )
             }
             aria-label="Increase quantity" // Accessible label for screen readers
             className="p-1 hover:bg-gray-100 transition-colors"
@@ -90,7 +101,7 @@ export default function CartItem({
 
         {/* Remove Button */}
         <button
-          onClick={() => handleRemove(item.product.id)}
+          onClick={() => handleRemove(item.itemId || item.product.id)}
           aria-label="Remove product from cart"
           className="text-red-600 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
         >

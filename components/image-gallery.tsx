@@ -69,7 +69,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
         )}
       </div>
 
-      {/* Thumbnails */}
+      {/* imageCovers */}
       {safeImages.length > 1 && (
         <div className="grid grid-cols-4 gap-2">
           {safeImages.map((img, i) => (
