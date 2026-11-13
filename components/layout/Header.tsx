@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { Heart, ShoppingCart, User, Menu, X, Search } from "lucide-react";
 import { SearchToast } from "@/components/ui/SearchToast";
 import { useEcommerce } from "@/contexts/EcommerceContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Links type
 type NavLink = {
@@ -26,6 +27,7 @@ const navLinks: NavLink[] = [
 // Main Page
 export function Header() {
   const { cartCount, wishlist } = useEcommerce();
+  const { user, logout } = useAuth();
   const router = useRouter();
 
   // States
@@ -142,12 +144,30 @@ export function Header() {
 
               {/* Account */}
               <Link
-                href="/account"
+                href={user ? "/account" : "/login"}
                 aria-label="Open account page"
                 className="text-gray-600 hover:text-blue-600"
               >
                 <User className="w-5 h-5" />
               </Link>
+              {user && (
+                <>
+                  {(user.role === "admin" || user.role === "manager") && (
+                    <Link
+                      href="/admin"
+                      className="hidden lg:inline text-sm text-gray-600 hover:text-blue-600"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => logout()}
+                    className="hidden lg:inline text-sm text-gray-600 hover:text-blue-600"
+                  >
+                    Sign out
+                  </button>
+                </>
+              )}
 
               {/* Mobile Menu Toggle */}
               <button
