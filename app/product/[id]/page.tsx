@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         siteName: "Bazarna",
         images: [
           {
-            url: product.thumbnail || product.images?.[0] || "/og/default.png",
+            url: product.imageCover || product.images?.[0] || "/og/default.png",
             width: 1200,
             height: 630,
             alt: product.title,
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         card: "summary_large_image",
         title: product.title,
         description: product.description,
-        images: [product.thumbnail || product.images?.[0] || "/og/default.png"],
+        images: [product.imageCover || product.images?.[0] || "/og/default.png"],
       },
     };
   } catch {
