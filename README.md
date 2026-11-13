@@ -94,9 +94,4 @@ http://localhost:3000
 ---
 
 ## 🧑‍💻 Developer
-
-**Ahmed Talaat** – Full-Stack Developer | Next.js & Node.js
-
-- **Frontend:** Next.js, React.js, JavaScript, TypeScript
-- **Backend:** Node.js, Express.js, REST APIs
-- **LinkedIn:** [Ahmed Talaat](https://www.linkedin.com/in/ahmedtalaat-dev/)
+Ahmed Talaat – Front-End Developer
