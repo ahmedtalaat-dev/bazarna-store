@@ -8,7 +8,6 @@ interface Testimonial {
   author: string;
   role: string;
   text: string;
-  avatar: string;
   rating: number;
 }
 
@@ -19,7 +18,6 @@ export const testimonials: Testimonial[] = [
     author: "Ahmed Ali",
     role: "Product Designer",
     text: "The quality and customer service are exceptional. I have become a loyal customer.",
-    avatar: "/reviews/review 1.webp",
     rating: 5,
   },
   {
@@ -27,7 +25,6 @@ export const testimonials: Testimonial[] = [
     author: "Omar Mohamed",
     role: "Tech Entrepreneur",
     text: "Best online shopping experience I have had. Fast shipping and great prices.",
-    avatar: "/reviews/review 2.webp",
     rating: 5,
   },
   {
@@ -35,7 +32,6 @@ export const testimonials: Testimonial[] = [
     author: "Abdullah Saad",
     role: "Content Creator",
     text: "High quality products at competitive prices. Highly recommended!",
-    avatar: "/reviews/review 3.webp",
     rating: 4,
   },
 ];
