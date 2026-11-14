@@ -47,7 +47,7 @@ export function BrandsSlider() {
                   key={`${String(brand._id)}-${index}`}
                   href={`/shop?brand=${encodeURIComponent(String(brand._id))}`}
                   aria-label={`Shop ${name}`}
-                  className="flex items-center justify-center bg-gray-50 rounded-xl p-6 min-w-[200px] mx-4 hover:bg-gray-100 transition"
+                  className="flex items-center justify-center bg-gray-50 rounded-xl p-8 min-w-[200px] mx-4 hover:bg-gray-100 transition"
                 >
                   {image ? (
                     <Image
