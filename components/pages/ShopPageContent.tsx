@@ -61,17 +61,10 @@ export default function ShopPageContent() {
         if (!active) return undefined;
         setLoading(true);
         setError(null);
-        return getProductPage(
-          hasPriceFilter ? { ...query, page: 1, limit: 50 } : query,
-        );
+        return getProductPage({ ...query, page: 1, limit: 50 });
       })
       .then(async (response) => {
         if (!active || !response) return;
-        if (!hasPriceFilter) {
-          setResult(response);
-          return;
-        }
-
         const remainingPages = Array.from(
           { length: Math.max(0, response.totalPages - 1) },
           (_, index) => index + 2,
@@ -83,16 +76,23 @@ export default function ShopPageContent() {
         );
         if (!active) return;
 
-        const lowerBound =
-          minPrice === undefined ? Number.NEGATIVE_INFINITY : Number(minPrice);
-        const upperBound =
-          maxPrice === undefined ? Number.POSITIVE_INFINITY : Number(maxPrice);
-        const matchingProducts = [response, ...additionalPages]
-          .flatMap((productPage) => productPage.products)
-          .filter(
+        let matchingProducts = [response, ...additionalPages].flatMap(
+          (productPage) => productPage.products,
+        );
+        if (hasPriceFilter) {
+          const lowerBound =
+            minPrice === undefined
+              ? Number.NEGATIVE_INFINITY
+              : Number(minPrice);
+          const upperBound =
+            maxPrice === undefined
+              ? Number.POSITIVE_INFINITY
+              : Number(maxPrice);
+          matchingProducts = matchingProducts.filter(
             (product) =>
               product.price >= lowerBound && product.price <= upperBound,
           );
+        }
         const start = (page - 1) * pageSize;
         setResult({
           products: matchingProducts.slice(start, start + pageSize),
@@ -224,11 +224,13 @@ export default function ShopPageContent() {
               <p className="text-center py-10">No products found</p>
             )}
 
-            <Pagination
-              page={page}
-              totalPages={result.totalPages}
-              onPageChange={(nextPage) => updateParam("page", nextPage)}
-            />
+            {!loading && !error && result.count > 0 && (
+              <Pagination
+                page={page}
+                totalPages={result.totalPages}
+                onPageChange={(nextPage) => updateParam("page", nextPage)}
+              />
+            )}
           </div>
           <aside className="w-full md:w-64">
             <ProductFilters
