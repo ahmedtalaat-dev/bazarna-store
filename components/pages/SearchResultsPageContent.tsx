@@ -6,15 +6,16 @@ import { ProductCard } from "@/components/product-card";
 import { ProductFilters, type FilterOptions } from "@/components/product/product-filters";
 import ProductSkeleton from "@/components/ProductSkeleton";
 import Pagination from "@/components/ui/Pagination";
-import { getProductPage, type ProductPage } from "@/lib/api";
+import { getProductPage } from "@/lib/api";
+import type { Product } from "@/data/products";
 
 const pageSize = 12;
+const catalogPageSize = 50;
 
 export default function SearchResultsPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const queryString = searchParams.toString();
-  const query = searchParams.get("q") || "";
+  const query = searchParams.get("q")?.trim().toLowerCase() || "";
   const page = Math.max(1, Number(searchParams.get("page")) || 1);
   const category = searchParams.get("category") || undefined;
   const color = searchParams.get("color") || undefined;
@@ -23,62 +24,114 @@ export default function SearchResultsPageContent() {
   const minPrice = searchParams.get("minPrice") || undefined;
   const maxPrice = searchParams.get("maxPrice") || undefined;
   const sortBy = searchParams.get("sort") || "newest";
-  const [result, setResult] = useState<ProductPage>({
-    products: [],
-    page: 1,
-    limit: pageSize,
-    totalPages: 0,
-    count: 0,
-  });
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    const params = new URLSearchParams(queryString);
-    const apiSort: Record<string, string> = {
-      newest: "-createdAt",
-      "best-selling": "-sold",
-      "price-low": "price",
-      "price-high": "-price",
-    };
-    const apiQuery: Record<string, string | number | undefined> = {
-      page,
-      limit: pageSize,
-      sort: apiSort[params.get("sort") || "newest"] || "-createdAt",
-      keyword: query || undefined,
-    };
-    if (category) apiQuery.category = category;
-    if (brand) apiQuery.brand = brand;
-    if (color) apiQuery.colors = color;
-    if (rating) apiQuery["ratingsAverage[gte]"] = rating;
-    if (minPrice) apiQuery["price[gte]"] = minPrice;
-    if (maxPrice) apiQuery["price[lte]"] = maxPrice;
 
-    Promise.resolve()
-      .then(() => {
-        if (!active) return undefined;
+    async function fetchProducts() {
+      try {
         setLoading(true);
         setError(null);
-        return getProductPage(apiQuery);
-      })
-      .then((response) => {
-        if (active && response) setResult(response);
-      })
-      .catch((cause: unknown) => {
+        const apiSort: Record<string, string> = {
+          newest: "-createdAt",
+          "best-selling": "-sold",
+          "price-low": "price",
+          "price-high": "-price",
+        };
+        const firstPage = await getProductPage({
+          page: 1,
+          limit: catalogPageSize,
+          sort: apiSort[sortBy] || "-createdAt",
+        });
+        const remainingPages = await Promise.all(
+          Array.from(
+            { length: Math.max(0, firstPage.totalPages - 1) },
+            (_, index) =>
+              getProductPage({
+                page: index + 2,
+                limit: catalogPageSize,
+                sort: apiSort[sortBy] || "-createdAt",
+              }),
+          ),
+        );
+        if (active) {
+          setProducts(
+            [firstPage, ...remainingPages].flatMap((response) => response.products),
+          );
+        }
+      } catch (cause: unknown) {
         if (!active) return;
         setError(
           cause instanceof Error ? cause.message : "Could not search products.",
         );
-      })
-      .finally(() => {
+      } finally {
         if (active) setLoading(false);
-      });
+      }
+    }
+
+    void fetchProducts();
 
     return () => {
       active = false;
     };
-  }, [queryString, query, page, category, brand, color, rating, minPrice, maxPrice]);
+  }, [sortBy]);
+
+  const matchingProducts = useMemo(() => {
+    let matches = products.filter((product) => {
+      const searchableText = [
+        product.title,
+        product.description,
+        product.category,
+        product.brand,
+        product.sku,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return !query || searchableText.includes(query);
+    });
+
+    if (category) {
+      matches = matches.filter(
+        (product) =>
+          product.category === category || product.categoryId === category,
+      );
+    }
+    if (brand) {
+      matches = matches.filter(
+        (product) => product.brand === brand || product.brandId === brand,
+      );
+    }
+    if (color) {
+      matches = matches.filter((product) => product.colors?.includes(color));
+    }
+    if (minPrice) {
+      matches = matches.filter((product) => product.price >= Number(minPrice));
+    }
+    if (maxPrice) {
+      matches = matches.filter((product) => product.price <= Number(maxPrice));
+    }
+    if (rating) {
+      matches = matches.filter((product) => product.rating >= rating);
+    }
+
+    if (sortBy === "price-low") {
+      matches.sort((a, b) => a.price - b.price);
+    } else if (sortBy === "price-high") {
+      matches.sort((a, b) => b.price - a.price);
+    }
+
+    return matches;
+  }, [products, query, category, brand, color, minPrice, maxPrice, rating, sortBy]);
+
+  const totalPages = Math.ceil(matchingProducts.length / pageSize);
+  const searchResults = matchingProducts.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
 
   const updateParam = useCallback(
     (key: string, value: string | number | undefined) => {
@@ -139,7 +192,7 @@ export default function SearchResultsPageContent() {
             Search Results
           </h1>
           <p className="text-gray-600">
-            {result.count} results for &ldquo;{query}&rdquo;
+            {matchingProducts.length} results for &ldquo;{query}&rdquo;
           </p>
         </div>
       </section>
@@ -171,9 +224,9 @@ export default function SearchResultsPageContent() {
               <div className="py-10 text-center text-red-600" role="alert">
                 {error}
               </div>
-            ) : result.products.length ? (
+            ) : searchResults.length ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {result.products.map((product) => (
+                {searchResults.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
@@ -190,11 +243,13 @@ export default function SearchResultsPageContent() {
               </div>
             )}
 
-            <Pagination
-              page={page}
-              totalPages={result.totalPages}
-              onPageChange={(nextPage) => updateParam("page", nextPage)}
-            />
+            {!loading && !error && matchingProducts.length > 0 && (
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={(nextPage) => updateParam("page", nextPage)}
+              />
+            )}
           </div>
           <aside className="w-full md:w-64">
             <ProductFilters
