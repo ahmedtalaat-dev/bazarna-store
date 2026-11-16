@@ -3,16 +3,23 @@
 // Imports
 import { ImageGallery } from "@/components/product/image-gallery";
 import { ProductCard } from "@/components/product/product-card";
+import { useAuth } from "@/contexts/AuthContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useToast } from "@/contexts/ToastContext";
-import { getProductById, getProducts } from "@/lib/api";
+import {
+  addProductReview,
+  getProductById,
+  getProducts,
+  removeReview,
+} from "@/lib/api";
 import { Heart, Star } from "lucide-react";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { type Product } from "@/data/products";
 
 // Main Page
 export default function ProductPageContent({ id }: { id: string }) {
+  const { user, loading: authLoading } = useAuth();
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } =
     useEcommerce();
   const { addToast } = useToast();
@@ -23,6 +30,13 @@ export default function ProductPageContent({ id }: { id: string }) {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState<string | undefined>();
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewBusy, setReviewBusy] = useState(false);
+  const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+  const [submittedReviewProductId, setSubmittedReviewProductId] = useState<
+    string | null
+  >(null);
 
   // Fetch Product
   useEffect(() => {
@@ -88,7 +102,9 @@ export default function ProductPageContent({ id }: { id: string }) {
       })
       .catch((error: unknown) =>
         addToast(
-          error instanceof Error ? error.message : "Could not add this item to cart.",
+          error instanceof Error
+            ? error.message
+            : "Could not add this item to cart.",
           "error",
         ),
       );
@@ -101,7 +117,9 @@ export default function ProductPageContent({ id }: { id: string }) {
         .then(() => addToast("Removed from wishlist", "info"))
         .catch((error: unknown) =>
           addToast(
-            error instanceof Error ? error.message : "Could not update your wishlist.",
+            error instanceof Error
+              ? error.message
+              : "Could not update your wishlist.",
             "error",
           ),
         );
@@ -110,10 +128,98 @@ export default function ProductPageContent({ id }: { id: string }) {
         .then(() => addToast("Added to wishlist!", "success"))
         .catch((error: unknown) =>
           addToast(
-            error instanceof Error ? error.message : "Could not update your wishlist.",
+            error instanceof Error
+              ? error.message
+              : "Could not update your wishlist.",
             "error",
           ),
         );
+    }
+  };
+
+  const currentUserId = String(user?._id ?? user?.id ?? "");
+  const hasReviewed =
+    submittedReviewProductId === product.id ||
+    Boolean(
+      currentUserId &&
+      product.reviews.some((review) => review.userId === currentUserId),
+    );
+  const isAdmin = user?.role === "admin";
+
+  const handleSubmitReview = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const comment = reviewComment.trim();
+    if (!currentUserId || hasReviewed || !comment || reviewBusy) return;
+
+    setReviewBusy(true);
+    try {
+      await addProductReview(product.id, reviewRating, comment);
+      setSubmittedReviewProductId(product.id);
+      setReviewComment("");
+      addToast("Your review was added.", "success");
+      try {
+        setProduct(await getProductById(id));
+      } catch (refreshError) {
+        console.error(
+          "Could not refresh the product after adding a review.",
+          refreshError,
+        );
+        addToast(
+          "Your review was saved, but the product could not be refreshed.",
+          "info",
+        );
+      }
+    } catch (error) {
+      addToast(
+        error instanceof Error ? error.message : "Could not add your review.",
+        "error",
+      );
+    } finally {
+      setReviewBusy(false);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!isAdmin || deletingReviewId) return;
+    if (!window.confirm("Delete this review? This cannot be undone.")) return;
+
+    setDeletingReviewId(reviewId);
+    try {
+      await removeReview(reviewId);
+      setSubmittedReviewProductId(null);
+      setProduct((current) => {
+        if (!current) return current;
+        const reviews = current.reviews.filter(
+          (review) => review.id !== reviewId,
+        );
+        const rating = reviews.length
+          ? reviews.reduce((total, review) => total + review.rating, 0) /
+            reviews.length
+          : 0;
+        return { ...current, reviews, rating };
+      });
+      addToast("Review deleted.", "success");
+      try {
+        setProduct(await getProductById(id));
+      } catch (refreshError) {
+        console.error(
+          "Could not refresh the product after deleting a review.",
+          refreshError,
+        );
+        addToast(
+          "The review was deleted, but the product could not be refreshed.",
+          "info",
+        );
+      }
+    } catch (error) {
+      addToast(
+        error instanceof Error
+          ? error.message
+          : "Could not delete this review.",
+        "error",
+      );
+    } finally {
+      setDeletingReviewId(null);
     }
   };
 
@@ -193,7 +299,9 @@ export default function ProductPageContent({ id }: { id: string }) {
             </label>
           ) : null}
           <p className="mb-4 text-sm text-gray-600">
-            {product.stock ? `${product.stock} in stock` : "Currently out of stock"}
+            {product.stock
+              ? `${product.stock} in stock`
+              : "Currently out of stock"}
           </p>
 
           {/* Actions */}
@@ -240,28 +348,158 @@ export default function ProductPageContent({ id }: { id: string }) {
       {/* Reviews */}
       <section className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl font-bold mb-6">Reviews</h2>
-        {product.reviews.map((review) => (
-          <div key={review.reviewerName} className="mb-4 border-b pb-4">
-            <p className="font-semibold">{review.reviewerName}</p>
-            <p className="text-sm text-gray-500">{review.date}</p>
-            <p>{review.comment}</p>
+        {product.reviews.length ? (
+          product.reviews.map((review, index) => {
+            const reviewId = review.id;
+            return (
+              <div
+                key={
+                  reviewId ?? `${review.userId ?? review.reviewerName}-${index}`
+                }
+                className="mb-4 border-b pb-4"
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  {/* User Avatar */}
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-lg uppercase">
+                    {review.reviewerName?.trim().charAt(0) || "U"}
+                  </div>
+
+                  {/* User Information */}
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {review.reviewerName}
+                    </p>
+                    <p className="text-sm text-gray-500">{review.date}</p>
+                  </div>
+                </div>
+
+                {/* Review Rating */}
+                <div
+                  className="flex items-center gap-1 mb-3"
+                  aria-label={`Rated ${review.rating} out of 5 stars`}
+                >
+                  {Array.from({ length: 5 }, (_, starIndex) => (
+                    <Star
+                      key={starIndex}
+                      size={18}
+                      className={
+                        starIndex < Math.round(Number(review.rating) || 0)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "text-gray-300"
+                      }
+                    />
+                  ))}
+                </div>
+
+                {/* Review Comment */}
+                <blockquote className="text-gray-700 italic leading-relaxed">
+                  &ldquo;{review.comment}&rdquo;
+                </blockquote>
+
+                {/* Admin Delete */}
+                {isAdmin && reviewId && (
+                  <button
+                    type="button"
+                    disabled={deletingReviewId !== null}
+                    onClick={() => void handleDeleteReview(reviewId)}
+                    className="mt-3 text-sm text-red-600 underline disabled:opacity-50"
+                  >
+                    {deletingReviewId === reviewId
+                      ? "Deleting..."
+                      : "Delete review"}
+                  </button>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <p className="mb-6 text-gray-500">No reviews yet.</p>
+        )}
+
+        {!isAdmin ? (
+          <div className="mt-8 max-w-xl">
+            {!hasReviewed ? (
+              <h3 className="mb-4 text-lg font-semibold">Write a review</h3>
+            ) : (
+              ""
+            )}
+            {authLoading ? (
+              <p className="text-gray-600">Checking your account...</p>
+            ) : !user ? (
+              <p className="text-gray-600">
+                <Link
+                  href={`/login?next=${encodeURIComponent(`/product/${id}`)}`}
+                  className="text-blue-600 underline"
+                >
+                  Sign in
+                </Link>{" "}
+                to review this product.
+              </p>
+            ) : hasReviewed ? (
+              <p className="text-gray-600">
+                You have already reviewed this product.
+              </p>
+            ) : !currentUserId ? (
+              <p className="text-gray-600">
+                Your account could not be verified to submit a review.
+              </p>
+            ) : (
+              <form onSubmit={handleSubmitReview} className="space-y-4">
+                <label className="block">
+                  <span className="mb-1 block text-sm font-medium">Rating</span>
+                  <select
+                    value={reviewRating}
+                    onChange={(event) =>
+                      setReviewRating(Number(event.target.value))
+                    }
+                    className="rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-3 py-2"
+                  >
+                    {[5, 4, 3, 2, 1].map((rating) => (
+                      <option key={rating} value={rating}>
+                        {rating} {rating === 1 ? "star" : "stars"}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-sm font-medium">Review</span>
+                  <textarea
+                    required
+                    maxLength={1000}
+                    value={reviewComment}
+                    onChange={(event) => setReviewComment(event.target.value)}
+                    rows={4}
+                    className="w-full rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-3 py-2"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  disabled={reviewBusy || !reviewComment.trim()}
+                  className="rounded-lg bg-blue-600 px-5 py-2 text-white disabled:opacity-50"
+                >
+                  {reviewBusy ? "Submitting..." : "Submit review"}
+                </button>
+              </form>
+            )}
           </div>
-        ))}
+        ) : (
+          ""
+        )}
       </section>
 
       {/* Related */}
       {relatedProducts.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-12">
-    <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+          <h2 className="text-2xl font-bold mb-6">Related Products</h2>
 
-    <div className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth">
-      {relatedProducts.map((p) => (
-        <div key={p.id} className="min-w-[300px] flex-shrink-0">
-          <ProductCard product={p} />
-        </div>
-      ))}
-    </div>
-  </section>
+          <div className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth">
+            {relatedProducts.map((p) => (
+              <div key={p.id} className="min-w-[300px] flex-shrink-0">
+                <ProductCard product={p} />
+              </div>
+            ))}
+          </div>
+        </section>
       )}
     </div>
   );
