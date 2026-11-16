@@ -20,10 +20,14 @@ export interface Product {
   shippingInformation?: string;
   warrantyInformation?: string;
   returnPolicy?: string;
+  ratingsAverage: number;
+  sold: number;
 }
 
 // Reviews interface
 export interface Review {
+  id?: string;
+  userId?: string;
   rating: number;
   comment: string;
   reviewerName: string;
