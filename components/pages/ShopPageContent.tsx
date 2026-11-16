@@ -37,6 +37,7 @@ export default function ShopPageContent() {
   useEffect(() => {
     let active = true;
     const params = new URLSearchParams(queryString);
+    const hasPriceFilter = minPrice !== undefined || maxPrice !== undefined;
     const sortValue = params.get("sort");
     const apiSort: Record<string, string> = {
       newest: "-createdAt",
@@ -54,18 +55,52 @@ export default function ShopPageContent() {
     if (brand) query.brand = brand;
     if (color) query.colors = color;
     if (rating) query["ratingsAverage[gte]"] = rating;
-    if (minPrice) query["price[gte]"] = minPrice;
-    if (maxPrice) query["price[lte]"] = maxPrice;
 
     Promise.resolve()
       .then(() => {
         if (!active) return undefined;
         setLoading(true);
         setError(null);
-        return getProductPage(query);
+        return getProductPage(
+          hasPriceFilter ? { ...query, page: 1, limit: 50 } : query,
+        );
       })
-      .then((response) => {
-        if (active && response) setResult(response);
+      .then(async (response) => {
+        if (!active || !response) return;
+        if (!hasPriceFilter) {
+          setResult(response);
+          return;
+        }
+
+        const remainingPages = Array.from(
+          { length: Math.max(0, response.totalPages - 1) },
+          (_, index) => index + 2,
+        );
+        const additionalPages = await Promise.all(
+          remainingPages.map((nextPage) =>
+            getProductPage({ ...query, page: nextPage, limit: 50 }),
+          ),
+        );
+        if (!active) return;
+
+        const lowerBound =
+          minPrice === undefined ? Number.NEGATIVE_INFINITY : Number(minPrice);
+        const upperBound =
+          maxPrice === undefined ? Number.POSITIVE_INFINITY : Number(maxPrice);
+        const matchingProducts = [response, ...additionalPages]
+          .flatMap((productPage) => productPage.products)
+          .filter(
+            (product) =>
+              product.price >= lowerBound && product.price <= upperBound,
+          );
+        const start = (page - 1) * pageSize;
+        setResult({
+          products: matchingProducts.slice(start, start + pageSize),
+          page,
+          limit: pageSize,
+          totalPages: Math.ceil(matchingProducts.length / pageSize),
+          count: matchingProducts.length,
+        });
       })
       .catch((cause: unknown) => {
         if (!active) return;
