@@ -22,6 +22,10 @@ export interface ProductPage {
 
 export interface ApiOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
+  next?: {
+    revalidate?: number | false;
+    tags?: string[];
+  };
 }
 
 export const getAuthToken = () =>
@@ -39,10 +43,16 @@ const assetUrl = (value: unknown) => {
 const normalizeReview = (value: unknown, index: number): Review => {
   const review = toRecord(value);
   const user = toRecord(review.user);
+  const userId =
+    typeof review.user === "string"
+      ? review.user
+      : String(user._id ?? user.id ?? review.userId ?? "");
   const createdAt =
     typeof review.createdAt === "string" ? review.createdAt : undefined;
 
   return {
+    id: String(review._id ?? review.id ?? "") || undefined,
+    userId: userId || undefined,
     rating: Number(review.ratings ?? review.rating ?? 0),
     comment: String(review.comment ?? review.title ?? ""),
     reviewerName: String(
@@ -93,6 +103,8 @@ export const normalizeProduct = (value: unknown): Product => {
     colors: Array.isArray(raw.colors)
       ? raw.colors.map(String)
       : [],
+      sold: Number(),
+      ratingsAverage: Number(),
     sizes: Array.isArray(raw.sizes) ? raw.sizes.map(String) : [],
     sku: typeof raw.sku === "string" ? raw.sku : undefined,
     shippingInformation:
@@ -129,10 +141,10 @@ export async function apiRequest<T = unknown>(
   const response = await fetch(
     `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`,
     {
+      cache: "no-store",
       ...options,
       headers,
       body,
-      cache: "no-store",
     },
   );
 
@@ -167,10 +179,14 @@ const queryString = (
 
 export async function getProductPage(
   query: Record<string, string | number | undefined> = {},
+  options?: ApiOptions,
 ): Promise<ProductPage> {
   const qs = queryString(query);
   const payload = toRecord(
-    await apiRequest(`/products${qs ? `?${qs}` : ""}`),
+    await apiRequest(`/products${qs ? `?${qs}` : ""}`, {
+      next: { revalidate: 60, tags: ["products"] },
+      ...options,
+    }),
   );
   const pagination = toRecord(payload.paginationResult);
   const items = Array.isArray(payload.data) ? payload.data : [];
@@ -185,33 +201,74 @@ export async function getProductPage(
 
 export async function getProducts(
   query: Record<string, string | number | undefined> = {},
+  options?: ApiOptions,
 ) {
-  return (await getProductPage(query)).products;
+  return (await getProductPage(query, options)).products;
 }
 
-export async function getProductById(id: string) {
-  const payload = toRecord(await apiRequest(`/products/${encodeURIComponent(id)}`));
+export async function getProductById(id: string, options?: ApiOptions) {
+  const payload = toRecord(
+    await apiRequest(`/products/${encodeURIComponent(id)}`, {
+      next: { revalidate: 60, tags: ["products", `product-${id}`] },
+      ...options,
+    }),
+  );
   return normalizeProduct(payload.data ?? payload);
 }
 
-export async function getCategories(query = "") {
-  const payload = toRecord(await apiRequest(`/categories${query}`));
+export async function getCategories(query = "", options?: ApiOptions) {
+  const payload = toRecord(
+    await apiRequest(`/categories${query}`, {
+      next: { revalidate: 3600, tags: ["categories"] },
+      ...options,
+    }),
+  );
   return Array.isArray(payload.data) ? payload.data.map(toRecord) : [];
 }
 
-export async function getBrands(query = "") {
-  const payload = toRecord(await apiRequest(`/brands${query}`));
+export async function getBrands(query = "", options?: ApiOptions) {
+  const payload = toRecord(
+    await apiRequest(`/brands${query}`, {
+      next: { revalidate: 3600, tags: ["brands"] },
+      ...options,
+    }),
+  );
   return Array.isArray(payload.data) ? payload.data.map(toRecord) : [];
 }
 
-export async function getReviews(productId?: string) {
+export async function getReviews(productId?: string, options?: ApiOptions) {
   const path = productId
     ? `/products/${encodeURIComponent(productId)}/reviews`
     : "/reviews";
-  const payload = toRecord(await apiRequest(path));
+  const payload = toRecord(
+    await apiRequest(path, {
+      next: {
+        revalidate: 60,
+        tags: ["reviews", ...(productId ? [`reviews-${productId}`] : [])],
+      },
+      ...options,
+    }),
+  );
   return Array.isArray(payload.data)
     ? payload.data.map(normalizeReview)
     : [];
+}
+
+export async function addProductReview(
+  productId: string,
+  ratings: number,
+  comment: string,
+) {
+  return apiRequest(`/products/${encodeURIComponent(productId)}/reviews`, {
+    method: "POST",
+    body: { ratings, title: comment },
+  });
+}
+
+export async function removeReview(reviewId: string) {
+  return apiRequest(`/reviews/${encodeURIComponent(reviewId)}`, {
+    method: "DELETE",
+  });
 }
 
 export async function login(email: string, password: string) {
