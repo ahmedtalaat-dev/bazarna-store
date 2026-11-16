@@ -36,7 +36,9 @@ export function ProductCard({ product }: ProductCardProps) {
       addToast("Added to cart!", "success");
     } catch (error) {
       addToast(
-        error instanceof Error ? error.message : "Could not add this item to cart.",
+        error instanceof Error
+          ? error.message
+          : "Could not add this item to cart.",
         "error",
       );
     }
@@ -56,7 +58,9 @@ export function ProductCard({ product }: ProductCardProps) {
       }
     } catch (error) {
       addToast(
-        error instanceof Error ? error.message : "Could not update your wishlist.",
+        error instanceof Error
+          ? error.message
+          : "Could not update your wishlist.",
         "error",
       );
     }
@@ -71,7 +75,6 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/product/${product.id}`}>
       <div className="group bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
-        
         {/* Image */}
         <div className="relative overflow-hidden bg-gray-100 h-[200px]">
           <Image
@@ -129,9 +132,6 @@ export function ProductCard({ product }: ProductCardProps) {
                 />
               ))}
             </div>
-            <span className="text-sm text-gray-600">
-              ({product.reviews?.length || 0})
-            </span>
           </div>
 
           {/* Price */}
