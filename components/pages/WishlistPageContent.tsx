@@ -149,9 +149,6 @@ export default function WishlistPageContent() {
                       <span className="text-sm font-medium text-blue-600">
                         {item.product.rating}
                       </span>
-                      <span className="text-xs text-gray-500">
-                        ({item.product.reviews.length})
-                      </span>
                     </div>
 
                     {/* Price */}
