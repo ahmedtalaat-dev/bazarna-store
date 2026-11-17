@@ -7,14 +7,11 @@ import { useState } from "react";
 // Main component
 export default function FAQPageContent() {
   // States
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
+  const [openItem, setOpenItem] = useState<string | null>(null);
 
   // Toggle FAQ item
   const toggleItem = (id: string) => {
-    setOpenItems((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setOpenItem((prev) => (prev === id ? null : id));
   };
 
   // FAQ data
@@ -101,7 +98,7 @@ export default function FAQPageContent() {
               {/* Question button */}
               <button
                 onClick={() => toggleItem(faq.id)}
-                aria-expanded={openItems[faq.id]}
+                aria-expanded={openItem === faq.id}
                 aria-controls={`faq-${faq.id}`}
                 className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors text-left"
               >
@@ -113,13 +110,13 @@ export default function FAQPageContent() {
                 <ChevronDown
                   aria-hidden="true"
                   className={`w-5 h-5 text-gray-600 transition-transform ${
-                    openItems[faq.id] ? "rotate-180" : ""
+                    openItem === faq.id ? "rotate-180" : ""
                   }`}
                 />
               </button>
 
               {/* Answer */}
-              {openItems[faq.id] && (
+              {openItem === faq.id && (
                 <div className="px-6 py-4 bg-gray-50 border-t">
                   <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
                 </div>
