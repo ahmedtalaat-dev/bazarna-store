@@ -55,7 +55,7 @@ export default function OrderTrackingPageContent() {
               required
               value={orderId}
               onChange={(event) => setOrderId(event.target.value)}
-              className="w-full rounded-lg border px-4 py-3"
+              className="w-full rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-4 py-3"
             />
           </label>
           {isAuthenticated ? (
