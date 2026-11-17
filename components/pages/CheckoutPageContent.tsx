@@ -30,7 +30,7 @@ export default function CheckoutPageContent() {
     cartId,
     cartTotal,
     cartDiscountedTotal,
-    refreshCommerce,
+    resetCart,
     loading: commerceLoading,
   } = useEcommerce();
   const { user, loading: authLoading } = useAuth();
@@ -100,7 +100,7 @@ export default function CheckoutPageContent() {
       }
       setConfirmedTotals({ subtotal, total });
       setOrderId(createdOrderId);
-      await refreshCommerce();
+      resetCart();
       addToast("Order placed successfully!", "success");
     } catch (error) {
       addToast(
