@@ -54,7 +54,7 @@ export default function ShopPageContent() {
     if (category) query.category = category;
     if (brand) query.brand = brand;
     if (color) query.colors = color;
-    if (rating) query["ratingsAverage[gte]"] = rating;
+    // if (rating) query["ratingsAverage[gte]"] = rating;
 
     Promise.resolve()
       .then(() => {
@@ -79,6 +79,11 @@ export default function ShopPageContent() {
         let matchingProducts = [response, ...additionalPages].flatMap(
           (productPage) => productPage.products,
         );
+        if (rating !== undefined) {
+          matchingProducts = matchingProducts.filter(
+            (product) => product.rating >= rating,
+          );
+        }
         if (hasPriceFilter) {
           const lowerBound =
             minPrice === undefined
