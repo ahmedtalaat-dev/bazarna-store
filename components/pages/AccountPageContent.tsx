@@ -108,7 +108,6 @@ export default function AccountPageContent() {
 
   const tabs: { id: AccountTab; label: string }[] = [
     { id: "profile", label: "Profile Information" },
-    { id: "orders", label: "Order History" },
     { id: "addresses", label: "Saved Addresses" },
   ];
 
@@ -137,9 +136,6 @@ export default function AccountPageContent() {
                 {tab.label}
               </button>
             ))}
-            <Link href="/profile" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
-              Profile Page
-            </Link>
             <Link href="/orders" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
               All Orders
             </Link>
@@ -162,7 +158,7 @@ export default function AccountPageContent() {
                           [field]: event.target.value,
                         }))
                       }
-                      className="w-full rounded-lg border px-4 py-3"
+                      className="w-full rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-4 py-3"
                     />
                   </label>
                 ))}
@@ -173,41 +169,6 @@ export default function AccountPageContent() {
                   Signed in as {String(user?.role ?? "user")}.
                 </p>
               </form>
-            )}
-
-            {activeTab === "orders" && (
-              <div className="bg-gray-50 rounded-lg p-8">
-                <div className="flex items-center justify-between mb-8">
-                  <h2 className="text-2xl font-bold text-blue-600">Order History</h2>
-                  <Link href="/orders" className="text-blue-600 hover:underline">View all</Link>
-                </div>
-                {orders.length ? (
-                  <div className="space-y-4">
-                    {orders.slice(0, 5).map((order) => (
-                      <Link
-                        key={String(order._id)}
-                        href={`/orders?id=${encodeURIComponent(String(order._id))}`}
-                        className="bg-white rounded-lg p-6 flex items-center justify-between gap-4"
-                      >
-                        <div>
-                          <p className="font-semibold text-blue-600">{String(order._id)}</p>
-                          <p className="text-sm text-gray-600">
-                            {new Date(String(order.createdAt ?? "")).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-blue-600">${Number(order.totalOrderPrice ?? 0).toFixed(2)}</p>
-                          <span className="text-sm text-gray-600">
-                            {order.isDelivered ? "Delivered" : order.isPaid ? "Paid" : "Processing"}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-600">You have no orders yet.</p>
-                )}
-              </div>
             )}
 
             {activeTab === "addresses" && (
@@ -227,7 +188,7 @@ export default function AccountPageContent() {
                           [field]: event.target.value,
                         }))
                       }
-                      className="rounded-lg border px-4 py-3"
+                      className="rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-4 py-3"
                     />
                   ))}
                   <button disabled={saving} className="px-4 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50">
