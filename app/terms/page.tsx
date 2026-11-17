@@ -89,10 +89,6 @@ export default function TermsPage() {
         "Bazarna can revise these terms anytime. Using the website means you accept updates.",
     },
     {
-      title: "Governing Law",
-      content: "Terms are governed by the laws of the United States.",
-    },
-    {
       title: "Contact Information",
       content: "If you have questions, contact us at:",
       list: [
