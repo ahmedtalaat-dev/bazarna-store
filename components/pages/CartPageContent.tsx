@@ -140,7 +140,7 @@ export default function CartPageContent() {
                       ),
                     );
                 }}
-                className="mt-6 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                className="mt-6 px-4 py-2 text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-lg transition-colors font-medium"
               >
                 Clear Cart
               </button>
@@ -150,13 +150,13 @@ export default function CartPageContent() {
                   value={coupon}
                   onChange={(event) => setCoupon(event.target.value)}
                   placeholder="Coupon code"
-                  className="min-w-0 flex-1 border rounded-lg px-4 py-2"
+                  className="min-w-0 flex-1 border border-gray-400 outline-blue-600 focus:border-blue-600 rounded-lg px-4 py-2"
                 />
                 <button
                   type="submit"
                   disabled={!user || busy}
                   title={!user ? "Sign in to apply a coupon" : undefined}
-                  className="px-4 py-2 border rounded-lg text-blue-600 disabled:opacity-50"
+                  className="px-4 py-2 border rounded-lg text-blue-600 hover:bg-blue-600 hover:text-white transition cursor-pointer disabled:opacity-50"
                 >
                   {busy ? "Applying..." : "Apply"}
                 </button>
