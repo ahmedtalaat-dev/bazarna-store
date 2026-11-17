@@ -45,6 +45,7 @@ export default function SearchResultsPageContent() {
           page: 1,
           limit: catalogPageSize,
           sort: apiSort[sortBy] || "-createdAt",
+          category,
         });
         const remainingPages = await Promise.all(
           Array.from(
@@ -54,6 +55,7 @@ export default function SearchResultsPageContent() {
                 page: index + 2,
                 limit: catalogPageSize,
                 sort: apiSort[sortBy] || "-createdAt",
+                category,
               }),
           ),
         );
@@ -77,7 +79,7 @@ export default function SearchResultsPageContent() {
     return () => {
       active = false;
     };
-  }, [sortBy]);
+  }, [sortBy, category]);
 
   const matchingProducts = useMemo(() => {
     let matches = products.filter((product) => {
@@ -94,12 +96,6 @@ export default function SearchResultsPageContent() {
       return !query || searchableText.includes(query);
     });
 
-    if (category) {
-      matches = matches.filter(
-        (product) =>
-          product.category === category || product.categoryId === category,
-      );
-    }
     if (brand) {
       matches = matches.filter(
         (product) => product.brand === brand || product.brandId === brand,
@@ -125,7 +121,7 @@ export default function SearchResultsPageContent() {
     }
 
     return matches;
-  }, [products, query, category, brand, color, minPrice, maxPrice, rating, sortBy]);
+  }, [products, query, brand, color, minPrice, maxPrice, rating, sortBy]);
 
   const totalPages = Math.ceil(matchingProducts.length / pageSize);
   const searchResults = matchingProducts.slice(
