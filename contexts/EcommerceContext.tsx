@@ -6,6 +6,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { type Product } from "@/data/products";
@@ -18,6 +19,7 @@ import {
   getCart,
   getProductById,
   getWishlist,
+  normalizeProduct,
   removeCartItem,
   removeWishlistItem,
   updateCartItem,
@@ -56,6 +58,7 @@ interface EcommerceContextType {
     quantity: number,
   ) => Promise<void>;
   clearCart: () => Promise<void>;
+  resetCart: () => void;
   addToWishlist: (product: Product) => Promise<void>;
   removeFromWishlist: (productId: string) => Promise<void>;
   isInWishlist: (productId: string) => boolean;
@@ -88,8 +91,12 @@ export function EcommerceProvider({
   );
   const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const refreshRequest = useRef(0);
+  const pendingCartUpdates = useRef(new Map<string, Promise<void>>());
+  const [localDataLoaded, setLocalDataLoaded] = useState(false);
 
   const refreshCommerce = useCallback(async () => {
+    const requestId = ++refreshRequest.current;
     if (!user) {
       setCartId(null);
       setLoading(false);
@@ -116,10 +123,12 @@ export function EcommerceProvider({
             const productId =
               typeof rawProduct === "string"
                 ? rawProduct
-                : String(record(rawProduct)._id ?? "");
+                : String(record(rawProduct)._id ?? record(rawProduct).id ?? "");
             const product =
-              typeof rawProduct === "object" && rawProduct
-                ? await getProductById(productId)
+              typeof rawProduct === "object" &&
+              rawProduct &&
+              record(rawProduct).title
+                ? normalizeProduct(rawProduct)
                 : await getProductById(productId);
             return {
               product,
@@ -130,20 +139,24 @@ export function EcommerceProvider({
             } satisfies CartItem;
           }),
         );
-        setCart(mappedItems);
-        setCartId(String(cartData._id ?? ""));
-        setCartDiscountedTotal(
-          Number.isFinite(Number(cartData.totalPriceAfterDiscount))
-            ? Number(cartData.totalPriceAfterDiscount)
-            : null,
-        );
+        if (requestId === refreshRequest.current) {
+          setCart(mappedItems);
+          setCartId(String(cartData._id ?? ""));
+          setCartDiscountedTotal(
+            Number.isFinite(Number(cartData.totalPriceAfterDiscount))
+              ? Number(cartData.totalPriceAfterDiscount)
+              : null,
+          );
+        }
       } else if (
         record(cartResult.reason).message &&
         String(record(cartResult.reason).message).includes("404")
       ) {
-        setCart([]);
-        setCartId(null);
-        setCartDiscountedTotal(null);
+        if (requestId === refreshRequest.current) {
+          setCart([]);
+          setCartId(null);
+          setCartDiscountedTotal(null);
+        }
       } else {
         throw cartResult.reason;
       }
@@ -155,22 +168,27 @@ export function EcommerceProvider({
             return {
               product:
                 product._id && product.title
-                  ? await getProductById(String(product._id))
+                  ? normalizeProduct(product)
                   : await getProductById(String(product)),
             };
           }),
         );
-        setWishlist(products);
+        if (requestId === refreshRequest.current) setWishlist(products);
       } else {
         throw wishlistResult.reason;
       }
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : "Could not sync your cart.";
-      setSyncError(message);
-      console.error("Could not synchronize cart or wishlist with the API.", error);
+      if (requestId === refreshRequest.current) {
+        const message =
+          error instanceof Error ? error.message : "Could not sync your cart.";
+        setSyncError(message);
+        console.error(
+          "Could not synchronize cart or wishlist with the API.",
+          error,
+        );
+      }
     } finally {
-      setLoading(false);
+      if (requestId === refreshRequest.current) setLoading(false);
     }
   }, [user]);
 
@@ -181,6 +199,7 @@ export function EcommerceProvider({
       return;
     }
 
+    refreshRequest.current += 1;
     try {
       const savedCart = localStorage.getItem("cart");
       const savedWishlist = localStorage.getItem("wishlist");
@@ -217,15 +236,16 @@ export function EcommerceProvider({
       console.error("Could not load saved cart data.", error);
     } finally {
       setLoading(false);
+      setLocalDataLoaded(true);
     }
   }, [authLoading, user, refreshCommerce]);
 
   useEffect(() => {
-    if (!authLoading && !user) {
+    if (!authLoading && !user && localDataLoaded) {
       localStorage.setItem("cart", JSON.stringify(cart));
       localStorage.setItem("wishlist", JSON.stringify(wishlist));
     }
-  }, [authLoading, user, cart, wishlist]);
+  }, [authLoading, user, localDataLoaded, cart, wishlist]);
 
   const addToCart = useCallback(
     async (
@@ -238,8 +258,45 @@ export function EcommerceProvider({
         throw new Error("Quantity must be a positive whole number.");
       }
       if (user) {
-        await addCartItem(product.id, color, quantity);
-        await refreshCommerce();
+        setCart((items) => {
+          const existing = items.find(
+            (item) =>
+              item.product.id === product.id &&
+              item.color === color &&
+              item.size === size,
+          );
+          return existing
+            ? items.map((item) =>
+                item === existing
+                  ? { ...item, quantity: item.quantity + quantity }
+                  : item,
+              )
+            : [...items, { product, quantity, color, size }];
+        });
+        try {
+          await addCartItem(product.id, color, quantity);
+        } catch (error) {
+          setCart((items) => {
+            const existing = items.find(
+              (item) =>
+                item.product.id === product.id &&
+                item.color === color &&
+                item.size === size,
+            );
+            if (!existing) return items;
+            const remainingQuantity = existing.quantity - quantity;
+            return remainingQuantity > 0
+              ? items.map((item) =>
+                  item === existing
+                    ? { ...item, quantity: remainingQuantity }
+                    : item,
+                )
+              : items.filter((item) => item !== existing);
+          });
+          void refreshCommerce();
+          throw error;
+        }
+        void refreshCommerce();
         return;
       }
       setCart((items) => {
@@ -300,8 +357,42 @@ export function EcommerceProvider({
             item.product.id === itemIdOrProductId,
         );
         if (!line?.itemId) throw new Error("Cart item was not found.");
-        await updateCartItem(line.itemId, quantity);
-        await refreshCommerce();
+        const itemId = line.itemId;
+        const previousQuantity = line.quantity;
+        const previousUpdate =
+          pendingCartUpdates.current.get(itemId) ?? Promise.resolve();
+        const updateRequest = previousUpdate
+          .catch(() => undefined)
+          .then(async () => {
+            await updateCartItem(itemId, quantity);
+          });
+        pendingCartUpdates.current.set(itemId, updateRequest);
+        setCart((items) =>
+          items.map((item) =>
+            item.itemId === itemId ? { ...item, quantity } : item,
+          ),
+        );
+        setCartDiscountedTotal(null);
+        try {
+          await updateRequest;
+        } catch (error) {
+          if (pendingCartUpdates.current.get(itemId) === updateRequest) {
+            pendingCartUpdates.current.delete(itemId);
+            setCart((items) =>
+              items.map((item) =>
+                item.itemId === itemId
+                  ? { ...item, quantity: previousQuantity }
+                  : item,
+              ),
+            );
+            void refreshCommerce();
+          }
+          throw error;
+        }
+        if (pendingCartUpdates.current.get(itemId) === updateRequest) {
+          pendingCartUpdates.current.delete(itemId);
+          void refreshCommerce();
+        }
         return;
       }
       setCart((items) =>
@@ -316,18 +407,43 @@ export function EcommerceProvider({
     [cart, user, removeFromCart, refreshCommerce],
   );
 
-  const clearCart = useCallback(async () => {
-    if (user) await clearRemoteCart();
+  const resetCart = useCallback(() => {
+    refreshRequest.current += 1;
     setCart([]);
     setCartId(null);
     setCartDiscountedTotal(null);
-  }, [user]);
+    setLoading(false);
+    setSyncError(null);
+  }, []);
+
+  const clearCart = useCallback(async () => {
+    if (user) await clearRemoteCart();
+    resetCart();
+  }, [user, resetCart]);
 
   const addToWishlist = useCallback(
     async (product: Product) => {
       if (user) {
-        await addWishlistItem(product.id);
-        await refreshCommerce();
+        const wasInWishlist = wishlist.some(
+          (item) => item.product.id === product.id,
+        );
+        setWishlist((items) =>
+          items.some((item) => item.product.id === product.id)
+            ? items
+            : [...items, { product }],
+        );
+        try {
+          await addWishlistItem(product.id);
+        } catch (error) {
+          if (!wasInWishlist) {
+            setWishlist((items) =>
+              items.filter((item) => item.product.id !== product.id),
+            );
+          }
+          void refreshCommerce();
+          throw error;
+        }
+        void refreshCommerce();
         return;
       }
       setWishlist((items) =>
@@ -336,7 +452,7 @@ export function EcommerceProvider({
           : [...items, { product }],
       );
     },
-    [user, refreshCommerce],
+    [user, wishlist, refreshCommerce],
   );
 
   const removeFromWishlist = useCallback(
@@ -383,6 +499,7 @@ export function EcommerceProvider({
       removeFromCart,
       updateCartQuantity,
       clearCart,
+      resetCart,
       addToWishlist,
       removeFromWishlist,
       isInWishlist: (productId: string) =>
@@ -403,6 +520,7 @@ export function EcommerceProvider({
       removeFromCart,
       updateCartQuantity,
       clearCart,
+      resetCart,
       addToWishlist,
       removeFromWishlist,
       applyCoupon,
