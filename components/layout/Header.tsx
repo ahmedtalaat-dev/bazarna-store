@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, ShoppingCart, User, Menu, X, Search } from "lucide-react";
+import { Heart, ShoppingCart, User, Menu, X, Search, LogOut } from "lucide-react";
 import { SearchToast } from "@/components/ui/SearchToast";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -107,7 +107,7 @@ export function Header() {
               <button
                 onClick={() => setSearchToastOpen(true)}
                 aria-label="Open search"
-                className="md:hidden text-gray-600 hover:text-blue-600"
+                className="lg:hidden text-gray-600 hover:text-blue-600"
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -155,16 +155,16 @@ export function Header() {
                   {(user.role === "admin" || user.role === "manager") && (
                     <Link
                       href="/admin"
-                      className="hidden lg:inline text-sm text-gray-600 hover:text-blue-600"
+                      className="hidden md:inline text-sm border border-blue-600 bg-blue-600  hover:bg-blue-500 text-white p-2"
                     >
                       Admin
                     </Link>
                   )}
                   <button
                     onClick={() => logout()}
-                    className="hidden lg:inline text-sm text-gray-600 hover:text-blue-600"
+                    className="hidden md:inline text-sm text-gray-600 hover:text-blue-600"
                   >
-                    Sign out
+                    <LogOut className="w-5 h-5 text-red-600 cursor-pointer" />
                   </button>
                 </>
               )}
@@ -198,6 +198,25 @@ export function Header() {
                   {link.name}
                 </Link>
               ))}
+
+              {user && (
+                <>
+                  {(user.role === "admin" || user.role === "manager") && (
+                    <Link
+                      href="/admin"
+                      className="block px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
+                    >
+                      Admin
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => logout()}
+                    className="block px-4 py-2 text-red-500 hover:text-red-600 rounded"
+                  >
+                    Sign out
+                  </button>
+                </>
+              )}
 
               {/* Mobile Search */}
               <form onSubmit={handleSearch} className="px-4 pb-3">
