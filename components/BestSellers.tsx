@@ -13,17 +13,17 @@ export function BestSellers() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true); // loading state
+  const [loading, setLoading] = useState(true);
   const sliderRef = useRef<HTMLDivElement>(null);
 
   const totalSlides = 4;
 
-  // ✅ Fetch Products
+  // Fetch Products
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await getProducts();
-        setProducts(data.slice(0, 4)); // limit to 4 products
+        setProducts(data.slice(0, 4));
       } catch (error) {
         console.error(error);
       } finally {
