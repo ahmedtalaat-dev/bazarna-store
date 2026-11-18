@@ -124,9 +124,6 @@ export function ProductCard({ product }: ProductCardProps) {
                 />
               ))}
             </div>
-            <span className="text-sm text-gray-600">
-              ({product.reviews?.length || 0})
-            </span>
           </div>
 
           {/* Price */}
