@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
- 
+
 // Product card interface
 interface ProductCardProps {
   product: Product;
@@ -37,7 +37,9 @@ export function ProductCard({ product }: ProductCardProps) {
       addToast("Added to cart!", "success");
     } catch (error) {
       addToast(
-        error instanceof Error ? error.message : "Could not add this item to cart.",
+        error instanceof Error
+          ? error.message
+          : "Could not add this item to cart.",
         "error",
       );
     }
@@ -57,7 +59,9 @@ export function ProductCard({ product }: ProductCardProps) {
       }
     } catch (error) {
       addToast(
-        error instanceof Error ? error.message : "Could not update your wishlist.",
+        error instanceof Error
+          ? error.message
+          : "Could not update your wishlist.",
         "error",
       );
     }
