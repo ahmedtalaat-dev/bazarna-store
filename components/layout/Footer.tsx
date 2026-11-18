@@ -30,14 +30,6 @@ export function Footer() {
     { name: "Shipping Info", href: "/shipping" },
   ];
 
-  // Categories links
-  const categories = [
-    { name: "Beauty", href: "/shop?category=beauty" },
-    { name: "Fragrances", href: "/shop?category=fragrances" },
-    { name: "Groceries", href: "/shop?category=groceries" },
-    { name: "Furniture", href: "/shop?category=furniture" },
-  ];
-
   // Quick links
   const quickLinks = [
     { name: "Shop", href: "/shop" },
@@ -119,24 +111,6 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Categories */}
-          <div>
-            <h4 className="font-semibold mb-4">Categories</h4>
-
-            <ul className="space-y-2 text-sm text-gray-400">
-              {categories.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Legal */}
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
@@ -156,7 +130,7 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Awards + Contact */}
+        {/* Contact */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Awards */}
