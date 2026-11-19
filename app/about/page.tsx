@@ -1,16 +1,9 @@
 // Imports
 import Stat from "@/components/sections/Stat";
-import { Award, Users, Zap, Shield } from "lucide-react";
 import type { Metadata } from "next";
-import { LucideIcon } from "lucide-react";
 import { CTASection } from "@/components/sections/CTASection";
+import {values, storyParagraphs} from "../../data/index"
 
-// Interfaces
-interface Values {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-}
 
 // Metadata
 export const metadata: Metadata = {
@@ -56,38 +49,9 @@ export const metadata: Metadata = {
 
 // About Page
 export default function AboutPage() {
-  // Values data
-  const values: Values[] = [
-    {
-      icon: Award,
-      title: "Quality",
-      description:
-        "We only offer products that meet our strict quality standards.",
-    },
-    {
-      icon: Users,
-      title: "Customer First",
-      description: "Your satisfaction is our top priority in everything we do.",
-    },
-    {
-      icon: Zap,
-      title: "Innovation",
-      description: "We stay ahead with the latest products and technologies.",
-    },
-    {
-      icon: Shield,
-      title: "Trust",
-      description:
-        "Secure transactions and reliable service you can depend on.",
-    },
-  ];
+  
 
-  // Story data
-  const storyParagraphs = [
-    "Bazarna was founded in 2024 with a simple vision: to make premium technology products accessible to everyone. We started as a small team of tech enthusiasts passionate about quality and customer service.",
-    "Today, we've grown into a trusted online retailer serving thousands of customers worldwide. We work directly with manufacturers to ensure authenticity and the best prices for our customers.",
-    "Our commitment to excellence, combined with our customer-first approach, has made us one of the most trusted e-commerce platforms in the tech industry.",
-  ];
+  
 
   return (
     <div className="min-h-screen bg-white">
