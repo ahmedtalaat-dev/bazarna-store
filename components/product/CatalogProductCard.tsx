@@ -1,6 +1,6 @@
 "use client";
 
-import { Product } from "@/data/products";
+import { Product } from "@/data";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
