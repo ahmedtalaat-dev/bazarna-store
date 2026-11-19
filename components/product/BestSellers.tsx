@@ -2,7 +2,7 @@
 
 // Imports
 import { ProductCard } from "@/components/product/product-card";
-import { type Product } from "@/data/products";
+import { type Product } from "@/data";
 import Link from "next/link";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
