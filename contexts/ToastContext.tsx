@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 // Imports
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from "react";
 
 // Toast interface
 export interface Toast {
   id: string;
   message: string;
-  type: 'success' | 'error' | 'info';
+  type: "success" | "error" | "info";
 }
- //ToastContext interface
+//ToastContext interface
 interface ToastContextType {
   toasts: Toast[];
-  addToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+  addToast: (message: string, type?: "success" | "error" | "info") => void;
   removeToast: (id: string) => void;
 }
 
@@ -23,7 +23,10 @@ let toastSequence = 0;
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+  const addToast = (
+    message: string,
+    type: "success" | "error" | "info" = "success",
+  ) => {
     const id = String(++toastSequence);
     setToasts((prev) => [...prev, { id, message, type }]);
 
@@ -48,7 +51,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 export function useToast() {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
+    throw new Error("useToast must be used within ToastProvider");
   }
   return context;
 }

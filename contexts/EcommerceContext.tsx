@@ -9,7 +9,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { type Product } from "@/data/products";
+import { type Product } from "../types/index";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   addCartItem,
@@ -77,11 +77,7 @@ const record = (value: unknown): ApiRecord =>
 
 const responseData = (value: unknown) => record(record(value).data);
 
-export function EcommerceProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function EcommerceProvider({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
@@ -209,25 +205,23 @@ export function EcommerceProvider({
         : [];
       setCart(
         Array.isArray(parsedCart)
-          ? parsedCart.filter(
-              (item): item is CartItem =>
-                Boolean(
-                  item &&
-                    typeof item === "object" &&
-                    (item as CartItem).product?.id,
-                ),
+          ? parsedCart.filter((item): item is CartItem =>
+              Boolean(
+                item &&
+                typeof item === "object" &&
+                (item as CartItem).product?.id,
+              ),
             )
           : [],
       );
       setWishlist(
         Array.isArray(parsedWishlist)
-          ? parsedWishlist.filter(
-              (item): item is WishlistItem =>
-                Boolean(
-                  item &&
-                    typeof item === "object" &&
-                    (item as WishlistItem).product?.id,
-                ),
+          ? parsedWishlist.filter((item): item is WishlistItem =>
+              Boolean(
+                item &&
+                typeof item === "object" &&
+                (item as WishlistItem).product?.id,
+              ),
             )
           : [],
       );

@@ -37,7 +37,8 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 const responseUserAndToken = (payload: ApiRecord) => {
   const data = (payload.data ?? {}) as ApiRecord;
   const token = typeof payload.token === "string" ? payload.token : "";
-  if (!token) throw new Error("The API did not return an authentication token.");
+  if (!token)
+    throw new Error("The API did not return an authentication token.");
   return { data, token };
 };
 
