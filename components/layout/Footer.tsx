@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Award, Mail } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/contexts/ToastContext";
+import { legalLinks, quickLinks } from "../../data/index";
 
 // Footer Content
 export function Footer() {
@@ -21,22 +22,6 @@ export function Footer() {
       setEmail("");
     }
   };
-
-  // Legal links
-  const legalLinks = [
-    { name: "Privacy Policy", href: "/privacy" },
-    { name: "Terms & Conditions", href: "/terms" },
-    { name: "Returns & Refunds", href: "/returns" },
-    { name: "Shipping Info", href: "/shipping" },
-  ];
-
-  // Quick links
-  const quickLinks = [
-    { name: "Shop", href: "/shop" },
-    { name: "About Us", href: "/about" },
-    { name: "Contact", href: "/contact" },
-    { name: "FAQ", href: "/faq" },
-  ];
 
   // Awards
   const awards = Array(4).fill(0);
