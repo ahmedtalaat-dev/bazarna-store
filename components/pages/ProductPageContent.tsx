@@ -15,7 +15,7 @@ import {
 import { Heart, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, type FormEvent } from "react";
-import { type Product } from "@/data/products";
+import { type Product } from "@/data";
 
 // Main Page
 export default function ProductPageContent({ id }: { id: string }) {
