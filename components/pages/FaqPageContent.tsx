@@ -3,6 +3,7 @@
 // Imports
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { faqs } from "../../data/index";
 
 // Main component
 export default function FAQPageContent() {
@@ -13,58 +14,6 @@ export default function FAQPageContent() {
   const toggleItem = (id: string) => {
     setOpenItem((prev) => (prev === id ? null : id));
   };
-
-  // FAQ data
-  const faqs = [
-    {
-      id: "shipping",
-      question: "How long does shipping take?",
-      answer:
-        "Standard shipping typically takes 2-3 business days. Express shipping is available for next-day delivery in select areas.",
-    },
-    {
-      id: "return",
-      question: "What is your return policy?",
-      answer:
-        "We offer a 30-day money-back guarantee on all products. If you are not satisfied, simply return the item for a full refund.",
-    },
-    {
-      id: "payment",
-      question: "What payment methods do you accept?",
-      answer:
-        "We accept credit cards, debit cards, and cash on delivery. All payments are processed securely.",
-    },
-    {
-      id: "warranty",
-      question: "Do products come with a warranty?",
-      answer:
-        "Most products come with the manufacturer warranty. Some items may have additional extended warranty options available.",
-    },
-    {
-      id: "tracking",
-      question: "Can I track my order?",
-      answer:
-        "Yes! You can track your order using your order ID on our Order Tracking page. You will also receive tracking updates via email.",
-    },
-    {
-      id: "bulk",
-      question: "Do you offer bulk discounts?",
-      answer:
-        "Yes, we offer special pricing for bulk orders. Please contact our sales team for more information.",
-    },
-    {
-      id: "authentic",
-      question: "Are all products authentic?",
-      answer:
-        "Absolutely! We only work with authorized manufacturers and suppliers to ensure 100% authenticity.",
-    },
-    {
-      id: "support",
-      question: "How can I contact customer support?",
-      answer:
-        "You can reach us via email at support@bazarna.com, phone at +20 1104894017, or through our contact form. We are available 24/7.",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-white">
