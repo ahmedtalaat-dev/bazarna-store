@@ -1,5 +1,6 @@
 // Imports
 import type { Metadata } from "next";
+import { terms } from "../../data/index";
 
 // Metadata
 export const metadata: Metadata = {
@@ -45,61 +46,6 @@ export const metadata: Metadata = {
 
 // Terms Page
 export default function TermsPage() {
-  // Terms data
-  const terms = [
-    {
-      title: "Acceptance of Terms",
-      content:
-        "By accessing and using this website, you accept and agree to be bound by the terms. If you do not agree, please do not use this service.",
-    },
-    {
-      title: "Use License",
-      content:
-        "Permission is granted to temporarily download one copy of the materials on Bazarna's website for personal, non-commercial viewing only. You may not:",
-      list: [
-        "Modify or copy the materials",
-        "Use the materials for any commercial purpose or public display",
-        "Attempt to decompile or reverse engineer software",
-        "Remove any copyright or proprietary notices",
-        "Transfer or 'mirror' materials on another server",
-      ],
-    },
-    {
-      title: "Disclaimer",
-      content:
-        "Materials are provided 'as is'. Bazarna makes no warranties, expressed or implied.",
-    },
-    {
-      title: "Limitations",
-      content:
-        "Bazarna or its suppliers are not liable for any damages from using the website.",
-    },
-    {
-      title: "Accuracy of Materials",
-      content:
-        "Materials may include errors. Bazarna does not guarantee accuracy and may update content anytime.",
-    },
-    {
-      title: "Links",
-      content: "Bazarna is not responsible for content on linked websites.",
-    },
-    {
-      title: "Modifications",
-      content:
-        "Bazarna can revise these terms anytime. Using the website means you accept updates.",
-    },
-    {
-      title: "Contact Information",
-      content: "If you have questions, contact us at:",
-      list: [
-        "Email: legal@Bazarna.com",
-        "Phone: +20 1104894017",
-        "Address: 123 Al Salam Street, Minya, Egypt",
-      ],
-    },
-  ];
-
-  // Terms Page
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
