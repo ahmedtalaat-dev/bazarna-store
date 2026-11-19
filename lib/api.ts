@@ -1,4 +1,4 @@
-import type { Product, Review } from "@/data/products";
+import type { Product, Review } from "../types/index";
 
 const API_BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL ||
