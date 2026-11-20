@@ -1,6 +1,6 @@
 # Bazarna Store 🛒
 
-Bazarna Store is a modern, responsive e-commerce website developed using **Next.js**, **TypeScript**, **Tailwind CSS**, **Lucide React**, and **Framer Motion**. This project demonstrates a complete e-commerce workflow with smooth animations, reusable components, and a clean, user-friendly interface.
+Bazarna Store is a modern, responsive e-commerce application with a **Next.js** frontend and a **Node.js/Express** backend. The backend uses **MongoDB** for data storage and **JWT** for authentication. The frontend is built with **TypeScript**, **Tailwind CSS**, **Lucide React**, and **Framer Motion**, with reusable components and a clean, user-friendly interface.
 
 ---
 
@@ -44,6 +44,9 @@ The website contains the following pages:
 - **Tailwind CSS** – Utility-first CSS framework for fast and responsive styling.
 - **Lucide React** – Beautiful, customizable icons.
 - **Framer Motion** – Smooth animations and transitions for a modern feel.
+- **Node.js and Express** – Backend runtime and REST API framework.
+- **MongoDB** – Database for application data.
+- **JWT (JSON Web Tokens)** – Token-based user authentication.
 
 ---
 
@@ -54,7 +57,7 @@ The website contains the following pages:
 - Fully typed components with TypeScript.
 - Dynamic product listing and detailed product pages.
 - Cart and wishlist functionality.
-- Secure checkout process.
+- Checkout flow with Cash on Delivery and a clearly labeled Visa demo option. The Visa demo does not process payments.
 - Order tracking page.
 - SEO-friendly metadata and Open Graph tags.
 - Clean and reusable components for scalability.
@@ -64,7 +67,7 @@ The website contains the following pages:
 
 ## ⚙️ Installation & Setup
 
-Follow these steps to run the project locally:
+Follow these steps to run the frontend locally. The backend API must be running or accessible separately:
 
 ### 1️⃣ Clone the repository
 ```bash
