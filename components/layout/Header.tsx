@@ -144,7 +144,7 @@ export function Header() {
 
               {/* Account */}
               <Link
-                href={user ? "/account" : "/login"}
+                href={user ? "/account" : "/auth/login"}
                 aria-label="Open account page"
                 className="text-gray-600 hover:text-blue-600"
               >
@@ -155,7 +155,7 @@ export function Header() {
                   {(user.role === "admin" || user.role === "manager") && (
                     <Link
                       href="/admin"
-                      className="hidden md:inline text-sm border border-blue-600 bg-blue-600  hover:bg-blue-500 text-white p-2"
+                      className="hidden md:inline text-sm border border-blue-600 bg-blue-600 rounded hover:bg-blue-500 text-white p-2"
                     >
                       Admin
                     </Link>
