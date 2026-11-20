@@ -64,7 +64,7 @@ export default function OrderTrackingPageContent() {
             </p>
           ) : (
             <p className="text-sm text-gray-500 mb-5">
-              <Link href="/login?next=%2Forder-tracking" className="text-blue-600 underline">
+              <Link href="/auth/login?next=%2Forder-tracking" className="text-blue-600 underline">
                 Sign in
               </Link>{" "}
               to continue.

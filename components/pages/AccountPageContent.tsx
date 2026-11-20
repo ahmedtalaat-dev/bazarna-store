@@ -99,7 +99,7 @@ export default function AccountPageContent() {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <h1 className="text-3xl font-bold text-blue-600">Sign in to your account</h1>
-        <Link href="/login?next=%2Faccount" className="px-6 py-3 bg-blue-600 text-white rounded-lg">
+        <Link href="/auth/login?next=%2Faccount" className="px-6 py-3 bg-blue-600 text-white rounded-lg">
           Sign In
         </Link>
       </div>
