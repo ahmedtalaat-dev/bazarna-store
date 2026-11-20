@@ -7,7 +7,7 @@ import { ProductFilters, type FilterOptions } from "@/components/product/product
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 import Pagination from "@/components/ui/Pagination";
 import { getProductPage } from "@/lib/api";
-import type { Product } from "@/data";
+import type { Product } from "../../types/index";
 
 const pageSize = 12;
 const catalogPageSize = 50;
