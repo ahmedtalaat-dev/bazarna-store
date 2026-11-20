@@ -98,7 +98,7 @@ export default function CheckoutForm({
                 onChange={handleInputChange}
                 autoComplete={field.autoComplete}
                 required
-                className="w-full px-4 py-3 border rounded-lg ring-gray-500 outline-none ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border rounded-lg ring-gray-400 outline-none ring-2 focus:ring-blue-500"
               />
             </div>
           ))}
