@@ -4,7 +4,7 @@
 import { Heart, Trash2, ShoppingCart, ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { type Product } from "@/data";
+import { type Product } from "../../types/index";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useState, useMemo } from "react";
