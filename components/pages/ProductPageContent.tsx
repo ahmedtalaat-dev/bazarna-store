@@ -15,7 +15,7 @@ import {
 import { Heart, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, type FormEvent } from "react";
-import { type Product } from "@/data";
+import { type Product } from "../../types/index";
 
 // Main Page
 export default function ProductPageContent({ id }: { id: string }) {
@@ -49,10 +49,10 @@ export default function ProductPageContent({ id }: { id: string }) {
 
         const allData = await getProducts({
           ...(data.categoryId ? { category: data.categoryId } : {}),
-          limit: 5,
+          limit: 20,
           sort: "-sold",
         });
-        const related = allData.filter((p) => p.id !== data.id).slice(0, 4);
+        const related = allData.filter((p) => p.category == data.category);
 
         setRelatedProducts(related);
       } catch (err) {
@@ -226,12 +226,9 @@ export default function ProductPageContent({ id }: { id: string }) {
   return (
     <div className="min-h-screen bg-white">
       {/* Breadcrumb */}
-      <div className="max-w-7xl mx-auto px-4 py-4 text-sm text-gray-600 border-b">
+      <div className="max-w-full mx-auto px-4 py-4 text-sm text-gray-600 border-b">
         <Link href="/">Home</Link> /<Link href="/shop">Shop</Link> /
-        <Link href={`/shop?category=${product.category}`}>
-          {product.category}
-        </Link>{" "}
-        /<span className="text-blue-600">{product.title}</span>
+        <span className="text-blue-600">{product.title}</span>
       </div>
 
       {/* Product */}
@@ -282,46 +279,57 @@ export default function ProductPageContent({ id }: { id: string }) {
           {/* Product description */}
           <p className="mb-6">{product.description}</p>
 
+          {/* Product Colors */}
           {product.colors?.length ? (
-            <label className="mb-6 block">
-              <span className="block mb-2 font-medium">Color</span>
-              <select
-                value={selectedColor || ""}
-                onChange={(event) => setSelectedColor(event.target.value)}
-                className="rounded-lg border px-4 py-2"
-              >
-                {product.colors.map((color) => (
-                  <option key={color} value={color}>
-                    {color}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <p className="mb-4 text-sm text-gray-600">
-            {product.stock
-              ? `${product.stock} in stock`
-              : "Currently out of stock"}
-          </p>
+            <div className="mb-6">
+              <span className="block mb-3 font-medium">
+                Color: <span className="text-gray-500">{selectedColor}</span>
+              </span>
 
-          {/* Actions */}
-          <div className="mb-6 flex gap-4">
-            <button
-              aria-label="Decrease quantity"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              <div className="flex items-center gap-3">
+                {product.colors.map((color) => (
+                  <label key={color} className="cursor-pointer" title={color}>
+                    <input
+                      type="radio"
+                      name="productColor"
+                      value={color}
+                      checked={selectedColor === color}
+                      onChange={() => setSelectedColor(color)}
+                      className="sr-only"
+                    />
+
+                    <span
+                      className={`block w-9 h-9 rounded-full border-2 transition-all
+              ${
+                selectedColor === color
+                  ? "ring-2 ring-blue-600 ring-offset-2 border-white"
+                  : "border-gray-300 hover:ring-2 hover:ring-gray-300"
+              }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="mb-4 flex flex-wrap items-center gap-3">
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold ${
+                product.stock
+                  ? "bg-green-50 text-green-700"
+                  : "bg-red-50 text-red-600"
+              }`}
             >
-              -
-            </button>
-            <span>{quantity}</span>
-            <button
-              aria-label="Increase quantity"
-              disabled={quantity >= (product.stock ?? 0)}
-              onClick={() =>
-                setQuantity(Math.min(product.stock ?? quantity, quantity + 1))
-              }
-            >
-              +
-            </button>
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  product.stock ? "bg-green-500" : "bg-red-500"
+                }`}
+              />
+              {product.stock
+                ? `${product.stock} in stock`
+                : "Currently out of stock"}
+            </span>
           </div>
 
           {/* Add to cart and wishlist */}
@@ -402,7 +410,7 @@ export default function ProductPageContent({ id }: { id: string }) {
                     type="button"
                     disabled={deletingReviewId !== null}
                     onClick={() => void handleDeleteReview(reviewId)}
-                    className="mt-3 text-sm text-red-600 underline disabled:opacity-50"
+                    className="mt-3 text-sm bg-red-600 text-white p-2 cursor-pointer hover:bg-red-500 transition rounded disabled:opacity-50"
                   >
                     {deletingReviewId === reviewId
                       ? "Deleting..."
@@ -428,8 +436,8 @@ export default function ProductPageContent({ id }: { id: string }) {
             ) : !user ? (
               <p className="text-gray-600">
                 <Link
-                  href={`/login?next=${encodeURIComponent(`/product/${id}`)}`}
-                  className="text-blue-600 underline"
+                  href={`/auth/login?next=${encodeURIComponent(`/product/${id}`)}`}
+                  className="text-blue-600"
                 >
                   Sign in
                 </Link>{" "}
