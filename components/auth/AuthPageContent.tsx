@@ -52,7 +52,7 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
       if (mode === "forgot") {
         await forgotPassword(form.email);
         addToast("Password reset code sent to your email.", "success");
-        router.push(`/reset-password?email=${encodeURIComponent(form.email)}`);
+        router.push(`/auth/reset-password?email=${encodeURIComponent(form.email)}`);
         return;
       }
 
@@ -203,19 +203,19 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
         <div className="mt-6 flex flex-col gap-3 text-sm text-blue-600">
           {mode === "login" && (
             <>
-              <Link href="/forgot-password">Forgot your password?</Link>
+              <Link href="/auth/forgot-password">Forgot your password?</Link>
               <p className="text-gray-600">
-                New to Bazarna? <Link href="/signup" className="text-blue-600">Create an account</Link>
+                New to Bazarna? <Link href="/auth/signup" className="text-blue-600">Create an account</Link>
               </p>
             </>
           )}
           {mode === "signup" && (
             <p className="text-gray-600">
-              Already registered? <Link href="/login" className="text-blue-600">Sign in</Link>
+              Already registered? <Link href="/auth/login" className="text-blue-600">Sign in</Link>
             </p>
           )}
-          {mode === "forgot" && <Link href="/login">Back to sign in</Link>}
-          {mode === "reset" && <Link href="/forgot-password">Request another reset code</Link>}
+          {mode === "forgot" && <Link href="/auth/login">Back to sign in</Link>}
+          {mode === "reset" && <Link href="/auth/forgot-password">Request another reset code</Link>}
         </div>
       </section>
     </main>
