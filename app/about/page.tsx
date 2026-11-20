@@ -2,8 +2,7 @@
 import Stat from "@/components/sections/Stat";
 import type { Metadata } from "next";
 import { CTASection } from "@/components/sections/CTASection";
-import {values, storyParagraphs} from "../../data/index"
-
+import { values, storyParagraphs } from "../../data/index";
 
 // Metadata
 export const metadata: Metadata = {
@@ -49,10 +48,6 @@ export const metadata: Metadata = {
 
 // About Page
 export default function AboutPage() {
-  
-
-  
-
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
