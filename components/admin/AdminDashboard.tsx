@@ -287,7 +287,7 @@ export default function AdminDashboard() {
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-4 text-center">
         <h1 className="text-3xl font-bold text-blue-600">Administrator access required</h1>
         <p className="text-gray-600">Sign in with an administrator or manager account to continue.</p>
-        <Link href="/login?next=%2Fadmin" className="rounded-lg bg-blue-600 px-6 py-3 text-white">
+        <Link href="/auth/auth/auth/auth/auth/auth/auth/auth/auth/login?next=%2Fadmin" className="rounded-lg bg-blue-600 px-6 py-3 text-white">
           Sign In
         </Link>
       </main>
