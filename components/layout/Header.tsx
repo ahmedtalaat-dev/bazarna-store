@@ -5,7 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, ShoppingCart, User, Menu, X, Search, LogOut } from "lucide-react";
+import {
+  Heart,
+  ShoppingCart,
+  User,
+  Menu,
+  X,
+  Search,
+  LogOut,
+} from "lucide-react";
 import { SearchToast } from "@/components/ui/SearchToast";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -154,7 +162,7 @@ export function Header() {
                 <>
                   {(user.role === "admin" || user.role === "manager") && (
                     <Link
-                      href="/admin"
+                      href="/auth/admin"
                       className="hidden md:inline text-sm border border-blue-600 bg-blue-600 rounded hover:bg-blue-500 text-white p-2"
                     >
                       Admin
@@ -203,7 +211,7 @@ export function Header() {
                 <>
                   {(user.role === "admin" || user.role === "manager") && (
                     <Link
-                      href="/admin"
+                      href="/auth/admin"
                       className="block px-4 py-2 text-gray-600 hover:bg-gray-100 rounded"
                     >
                       Admin

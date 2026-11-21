@@ -5,7 +5,11 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getCategories, type ApiRecord } from "@/lib/api";
 
-const categoryFallbacks = ["/categories/beauty.webp", "/categories/fragrances.webp", "/categories/furniture.webp"];
+const categoryFallbacks = [
+  "/categories/beauty.webp",
+  "/categories/fragrances.webp",
+  "/categories/furniture.webp",
+];
 
 export function ShopByCategory() {
   const [categories, setCategories] = useState<ApiRecord[]>([]);
@@ -32,7 +36,9 @@ export function ShopByCategory() {
         Shop by Category
       </h2>
       {error ? (
-        <p className="text-center text-gray-600" role="status">{error}</p>
+        <p className="text-center text-gray-600" role="status">
+          {error}
+        </p>
       ) : categories.length ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {categories.map((category, index) => {
@@ -58,8 +64,12 @@ export function ShopByCategory() {
                 />
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex items-center justify-center">
                   <div className="text-center">
-                    <h3 className="text-3xl font-bold text-white mb-2">{name}</h3>
-                    <p className="text-white/80">Explore our {name.toLowerCase()} collection</p>
+                    <h3 className="text-3xl font-bold text-white mb-2">
+                      {name}
+                    </h3>
+                    <p className="text-white/80">
+                      Explore our {name.toLowerCase()} collection
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -67,7 +77,9 @@ export function ShopByCategory() {
           })}
         </div>
       ) : (
-        <p className="text-center text-gray-600">No categories available yet.</p>
+        <p className="text-center text-gray-600">
+          No categories available yet.
+        </p>
       )}
     </section>
   );

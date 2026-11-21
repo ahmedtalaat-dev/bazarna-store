@@ -40,8 +40,7 @@ export function BrandsSlider() {
           >
             {[...brands, ...brands].map((brand, index) => {
               const name = String(brand.name ?? "Brand");
-              const image =
-                typeof brand.image === "string" ? brand.image : "";
+              const image = typeof brand.image === "string" ? brand.image : "";
               return (
                 <Link
                   key={`${String(brand._id)}-${index}`}

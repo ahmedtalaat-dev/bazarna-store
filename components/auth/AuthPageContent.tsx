@@ -5,11 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
-import {
-  forgotPassword,
-  resetPassword,
-  verifyResetCode,
-} from "@/lib/api";
+import { forgotPassword, resetPassword, verifyResetCode } from "@/lib/api";
 
 export type AuthPageMode = "login" | "signup" | "forgot" | "reset";
 
@@ -45,14 +41,21 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
         if (form.password !== form.passwordConfirm) {
           throw new Error("Passwords do not match.");
         }
-        await signup(form.name, form.email, form.password, form.passwordConfirm);
+        await signup(
+          form.name,
+          form.email,
+          form.password,
+          form.passwordConfirm,
+        );
         router.replace("/account");
         return;
       }
       if (mode === "forgot") {
         await forgotPassword(form.email);
         addToast("Password reset code sent to your email.", "success");
-        router.push(`/auth/reset-password?email=${encodeURIComponent(form.email)}`);
+        router.push(
+          `/auth/reset-password?email=${encodeURIComponent(form.email)}`,
+        );
         return;
       }
 
@@ -68,7 +71,10 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
       await refreshUser();
       router.replace("/account");
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Request failed.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Request failed.",
+        "error",
+      );
     } finally {
       setBusy(false);
     }
@@ -86,10 +92,14 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
       <section className="w-full max-w-md rounded-xl border bg-white p-8 shadow-sm">
         <h1 className="text-3xl font-bold text-blue-600 mb-2">{title[mode]}</h1>
         <p className="text-gray-600 mb-8">
-          {mode === "login" && "Sign in to manage your orders and shopping cart."}
-          {mode === "signup" && "Join Bazarna to save your cart and place orders."}
-          {mode === "forgot" && "Enter the email address linked to your account."}
-          {mode === "reset" && "Use the code sent to your email to set a new password."}
+          {mode === "login" &&
+            "Sign in to manage your orders and shopping cart."}
+          {mode === "signup" &&
+            "Join Bazarna to save your cart and place orders."}
+          {mode === "forgot" &&
+            "Enter the email address linked to your account."}
+          {mode === "reset" &&
+            "Use the code sent to your email to set a new password."}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -136,7 +146,9 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
                 />
               </label>
               <label className="block">
-                <span className="block text-sm font-medium mb-2">Reset code</span>
+                <span className="block text-sm font-medium mb-2">
+                  Reset code
+                </span>
                 <input
                   required
                   inputMode="numeric"
@@ -159,7 +171,9 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
                 minLength={6}
                 type="password"
                 placeholder="Enter your password"
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                autoComplete={
+                  mode === "login" ? "current-password" : "new-password"
+                }
                 value={form.password}
                 onChange={(event) => update("password", event.target.value)}
                 className="w-full rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-4 py-3"
@@ -169,7 +183,9 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
 
           {(mode === "signup" || mode === "reset") && (
             <label className="block">
-              <span className="block text-sm font-medium mb-2">Confirm password</span>
+              <span className="block text-sm font-medium mb-2">
+                Confirm password
+              </span>
               <input
                 required
                 minLength={6}
@@ -177,7 +193,9 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
                 placeholder="Confirm your password"
                 autoComplete="new-password"
                 value={form.passwordConfirm}
-                onChange={(event) => update("passwordConfirm", event.target.value)}
+                onChange={(event) =>
+                  update("passwordConfirm", event.target.value)
+                }
                 className="w-full rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-4 py-3"
               />
             </label>
@@ -205,17 +223,25 @@ export function AuthPageContent({ mode }: { mode: AuthPageMode }) {
             <>
               <Link href="/auth/forgot-password">Forgot your password?</Link>
               <p className="text-gray-600">
-                New to Bazarna? <Link href="/auth/signup" className="text-blue-600">Create an account</Link>
+                New to Bazarna?{" "}
+                <Link href="/auth/signup" className="text-blue-600">
+                  Create an account
+                </Link>
               </p>
             </>
           )}
           {mode === "signup" && (
             <p className="text-gray-600">
-              Already registered? <Link href="/auth/login" className="text-blue-600">Sign in</Link>
+              Already registered?{" "}
+              <Link href="/auth/login" className="text-blue-600">
+                Sign in
+              </Link>
             </p>
           )}
           {mode === "forgot" && <Link href="/auth/login">Back to sign in</Link>}
-          {mode === "reset" && <Link href="/auth/forgot-password">Request another reset code</Link>}
+          {mode === "reset" && (
+            <Link href="/auth/forgot-password">Request another reset code</Link>
+          )}
         </div>
       </section>
     </main>
