@@ -12,16 +12,7 @@ import CheckoutForm from "@/components/cart-checkout/CheckoutForm";
 import PaymentForm from "@/components/cart-checkout/PaymentForm";
 import CheckoutOrderSummary from "@/components/cart-checkout/CheckoutOrderSummary";
 import OrderPlaced from "@/components/cart-checkout/OrderPlaced";
-
-interface ShippingForm {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  postalCode: string;
-}
+import { ShippingForm } from "../../types/index";
 
 export default function CheckoutPageContent() {
   const router = useRouter();
@@ -77,7 +68,10 @@ export default function CheckoutPageContent() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!cartId || cart.length === 0) {
-      addToast("Your cart is empty or not synchronized. Please review it before checkout.", "error");
+      addToast(
+        "Your cart is empty or not synchronized. Please review it before checkout.",
+        "error",
+      );
       return;
     }
     if (isProcessing) return;

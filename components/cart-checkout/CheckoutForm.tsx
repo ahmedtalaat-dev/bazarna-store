@@ -1,19 +1,4 @@
-// Interface for form data
-interface CheckoutFormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  postalCode: string;
-}
-
-// Props for the component
-interface CheckoutFormProps {
-  formData: CheckoutFormData;
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import { CheckoutFormData, CheckoutFormProps } from "../../types/index";
 
 // Fields config
 const fields = [
@@ -86,7 +71,6 @@ export default function CheckoutForm({
         <div className="grid grid-cols-2 gap-4">
           {fields.map((field) => (
             <div key={field.name} className={field.colSpan}>
-
               {/* Input */}
               <input
                 id={field.name}

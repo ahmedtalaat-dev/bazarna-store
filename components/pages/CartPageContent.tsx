@@ -23,8 +23,7 @@ export default function CartPageContent() {
     loading,
     syncError,
     applyCoupon,
-  } =
-    useEcommerce();
+  } = useEcommerce();
   const { addToast } = useToast();
   const { user } = useAuth();
   const [coupon, setCoupon] = useState("");
@@ -36,7 +35,10 @@ export default function CartPageContent() {
       await removeFromCart(itemId);
       addToast("Removed from cart", "info");
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Could not remove item.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Could not remove item.",
+        "error",
+      );
     }
   };
 
@@ -46,7 +48,10 @@ export default function CartPageContent() {
     try {
       await updateCartQuantity(productId, quantity);
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Could not update quantity.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Could not update quantity.",
+        "error",
+      );
     }
   };
 
@@ -63,7 +68,10 @@ export default function CartPageContent() {
       await applyCoupon(coupon.trim());
       addToast("Coupon applied successfully.", "success");
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Could not apply coupon.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Could not apply coupon.",
+        "error",
+      );
     } finally {
       setBusy(false);
     }
@@ -81,14 +89,20 @@ export default function CartPageContent() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         {syncError && (
-          <p className="mb-6 text-red-600" role="alert">{syncError}</p>
+          <p className="mb-6 text-red-600" role="alert">
+            {syncError}
+          </p>
         )}
         {loading && (
-          <p className="mb-6 text-gray-500" role="status">Syncing your cart...</p>
+          <p className="mb-6 text-gray-500" role="status">
+            Syncing your cart...
+          </p>
         )}
         {/* Empty Cart */}
         {loading && cart.length === 0 ? (
-          <p className="py-16 text-center text-gray-500">Loading your cart...</p>
+          <p className="py-16 text-center text-gray-500">
+            Loading your cart...
+          </p>
         ) : cart.length === 0 ? (
           <div className="text-center py-20">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">
@@ -120,7 +134,10 @@ export default function CartPageContent() {
               <div className="space-y-4">
                 {cart.map((item) => (
                   <CartItem
-                    key={item.itemId || `${item.product.id}-${item.color || "default"}`}
+                    key={
+                      item.itemId ||
+                      `${item.product.id}-${item.color || "default"}`
+                    }
                     item={item}
                     handleQuantityChange={handleQuantityChange}
                     handleRemove={handleRemove}
@@ -135,7 +152,9 @@ export default function CartPageContent() {
                     .then(() => addToast("Cart cleared", "info"))
                     .catch((error: unknown) =>
                       addToast(
-                        error instanceof Error ? error.message : "Could not clear cart.",
+                        error instanceof Error
+                          ? error.message
+                          : "Could not clear cart.",
                         "error",
                       ),
                     );

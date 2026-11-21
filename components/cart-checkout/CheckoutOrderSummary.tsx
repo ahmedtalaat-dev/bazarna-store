@@ -1,15 +1,6 @@
 // Imports
 import Image from "next/image";
-import type { CartItem } from "@/contexts/EcommerceContext";
-
-// Props interface
-interface OrderSummaryProps {
-  cart: CartItem[];
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
-}
+import { OrderSummaryProps } from "../../types/index";
 
 // Main Page
 export default function CheckoutOrderSummary({
@@ -32,7 +23,9 @@ export default function CheckoutOrderSummary({
           {cart.map((item) => (
             // Single item
             <div
-              key={item.itemId || `${item.product.id}-${item.color || "default"}`}
+              key={
+                item.itemId || `${item.product.id}-${item.color || "default"}`
+              }
               className="flex gap-3 pb-4 border-b last:border-b-0"
             >
               {/* Product image */}
@@ -59,7 +52,10 @@ export default function CheckoutOrderSummary({
 
                 {/* Item total price */}
                 <p className="font-semibold text-blue-600 text-sm">
-                  ${((item.unitPrice ?? item.product.price) * item.quantity).toFixed(2)}
+                  $
+                  {(
+                    (item.unitPrice ?? item.product.price) * item.quantity
+                  ).toFixed(2)}
                 </p>
               </div>
             </div>

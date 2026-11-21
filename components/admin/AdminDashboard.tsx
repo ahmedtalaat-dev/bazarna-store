@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type FormEvent,
+} from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
@@ -105,7 +111,10 @@ export default function AdminDashboard() {
         );
       })
       .catch((cause: unknown) =>
-        console.error("Could not load admin category and brand choices.", cause),
+        console.error(
+          "Could not load admin category and brand choices.",
+          cause,
+        ),
       );
   }, [isManager, loadSection]);
 
@@ -166,7 +175,8 @@ export default function AdminDashboard() {
         values[field] = value === undefined ? "" : String(value);
       }
     }
-    if (!values.category && category._id) values.category = String(category._id);
+    if (!values.category && category._id)
+      values.category = String(category._id);
     setForm(values);
     setImage(null);
     setProductImages([]);
@@ -194,10 +204,17 @@ export default function AdminDashboard() {
       for (const field of fields) {
         const value = form[field]?.trim();
         if (!value) continue;
-        if (["price", "priceAfterDiscount", "quantity", "discount"].includes(field)) {
+        if (
+          ["price", "priceAfterDiscount", "quantity", "discount"].includes(
+            field,
+          )
+        ) {
           body[field] = Number(value);
         } else if (field === "colors" || field === "subcategories") {
-          body[field] = value.split(",").map((part) => part.trim()).filter(Boolean);
+          body[field] = value
+            .split(",")
+            .map((part) => part.trim())
+            .filter(Boolean);
         } else {
           body[field] = value;
         }
@@ -215,7 +232,10 @@ export default function AdminDashboard() {
           }
         });
         if (image) {
-          formData.append(section === "products" ? "imageCover" : "image", image);
+          formData.append(
+            section === "products" ? "imageCover" : "image",
+            image,
+          );
         }
         productImages.forEach((file) => formData.append("images", file));
         requestBody = formData;
@@ -224,7 +244,9 @@ export default function AdminDashboard() {
         throw new Error("Choose a cover image before creating a product.");
       }
 
-      const itemId = selected?._id ? `/${encodeURIComponent(String(selected._id))}` : "";
+      const itemId = selected?._id
+        ? `/${encodeURIComponent(String(selected._id))}`
+        : "";
       await apiRequest(`${path}${itemId}`, {
         method: selected ? "PUT" : "POST",
         body: requestBody,
@@ -246,7 +268,10 @@ export default function AdminDashboard() {
   };
 
   const deleteEntity = async (item: ApiRecord) => {
-    if (!canDelete || !window.confirm("Delete this record? This cannot be undone.")) {
+    if (
+      !canDelete ||
+      !window.confirm("Delete this record? This cannot be undone.")
+    ) {
       return;
     }
     try {
@@ -258,7 +283,9 @@ export default function AdminDashboard() {
       await loadSection();
     } catch (cause) {
       addToast(
-        cause instanceof Error ? cause.message : "Could not delete this record.",
+        cause instanceof Error
+          ? cause.message
+          : "Could not delete this record.",
         "error",
       );
     }
@@ -266,10 +293,16 @@ export default function AdminDashboard() {
 
   const updateOrder = async (order: ApiRecord, action: "pay" | "deliver") => {
     try {
-      await apiRequest(`/orders/${encodeURIComponent(String(order._id))}/${action}`, {
-        method: "PUT",
-      });
-      addToast(`Order marked ${action === "pay" ? "paid" : "delivered"}.`, "success");
+      await apiRequest(
+        `/orders/${encodeURIComponent(String(order._id))}/${action}`,
+        {
+          method: "PUT",
+        },
+      );
+      addToast(
+        `Order marked ${action === "pay" ? "paid" : "delivered"}.`,
+        "success",
+      );
       await loadSection();
     } catch (cause) {
       addToast(
@@ -280,14 +313,25 @@ export default function AdminDashboard() {
   };
 
   if (authLoading) {
-    return <p className="min-h-[60vh] flex items-center justify-center">Checking administrator access...</p>;
+    return (
+      <p className="min-h-[60vh] flex items-center justify-center">
+        Checking administrator access...
+      </p>
+    );
   }
   if (!isManager) {
     return (
       <main className="min-h-[60vh] flex flex-col items-center justify-center gap-4 px-4 text-center">
-        <h1 className="text-3xl font-bold text-blue-600">Administrator access required</h1>
-        <p className="text-gray-600">Sign in with an administrator or manager account to continue.</p>
-        <Link href="/auth/auth/auth/auth/auth/auth/auth/auth/auth/login?next=%2Fadmin" className="rounded-lg bg-blue-600 px-6 py-3 text-white">
+        <h1 className="text-3xl font-bold text-blue-600">
+          Administrator access required
+        </h1>
+        <p className="text-gray-600">
+          Sign in with an administrator or manager account to continue.
+        </p>
+        <Link
+          href="/auth/login?next=%2Fadmin"
+          className="rounded-lg bg-blue-600 px-6 py-3 text-white"
+        >
           Sign In
         </Link>
       </main>
@@ -302,7 +346,9 @@ export default function AdminDashboard() {
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-10">
           <h1 className="text-4xl font-bold text-blue-600">Admin Dashboard</h1>
-          <p className="text-gray-600 mt-2">Manage store data and order fulfillment.</p>
+          <p className="text-gray-600 mt-2">
+            Manage store data and order fulfillment.
+          </p>
         </div>
       </section>
       <div className="max-w-7xl mx-auto px-4 py-10">
@@ -318,7 +364,9 @@ export default function AdminDashboard() {
                 startCreate();
               }}
               className={`px-4 py-2 rounded-lg border ${
-                section === key ? "bg-blue-600 text-white border-blue-600" : "text-blue-600"
+                section === key
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "text-blue-600"
               }`}
             >
               {sectionLabels[key]}
@@ -326,12 +374,18 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {error && <p role="alert" className="mb-5 text-red-600">{error}</p>}
+        {error && (
+          <p role="alert" className="mb-5 text-red-600">
+            {error}
+          </p>
+        )}
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
           <section>
             <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
-              <h2 className="text-2xl font-bold text-blue-600">{sectionLabels[section]}</h2>
+              <h2 className="text-2xl font-bold text-blue-600">
+                {sectionLabels[section]}
+              </h2>
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
@@ -347,12 +401,17 @@ export default function AdminDashboard() {
                   placeholder="Search..."
                   className="rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-3 py-2"
                 />
-                <button className="rounded-lg border px-4 py-2 bg-blue-600 text-white">Search</button>
+                <button className="rounded-lg border px-4 py-2 bg-blue-600 text-white">
+                  Search
+                </button>
               </form>
             </div>
 
             {section !== "orders" && (
-              <button onClick={startCreate} className="mb-4 rounded-lg bg-blue-600 px-4 py-2 text-white">
+              <button
+                onClick={startCreate}
+                className="mb-4 rounded-lg bg-blue-600 px-4 py-2 text-white"
+              >
                 Create {sectionLabels[section].slice(0, -1)}
               </button>
             )}
@@ -369,12 +428,20 @@ export default function AdminDashboard() {
                 <tbody>
                   {items.map((item) => {
                     const title = String(
-                      item.title ?? item.name ?? item.email ?? item._id ?? "Record",
+                      item.title ??
+                        item.name ??
+                        item.email ??
+                        item._id ??
+                        "Record",
                     );
                     const details =
                       section === "orders"
                         ? `$${Number(item.totalOrderPrice ?? 0).toFixed(2)} · ${
-                            item.isDelivered ? "Delivered" : item.isPaid ? "Paid" : "Processing"
+                            item.isDelivered
+                              ? "Delivered"
+                              : item.isPaid
+                                ? "Paid"
+                                : "Processing"
                           }`
                         : section === "products"
                           ? `$${Number(item.priceAfterDiscount ?? item.price ?? 0)} · stock ${Number(item.quantity ?? 0)}`
@@ -385,24 +452,50 @@ export default function AdminDashboard() {
                               : `ID: ${String(item._id ?? "")}`;
                     return (
                       <tr key={String(item._id)} className="border-t">
-                        <td className="px-4 py-3 font-medium text-blue-600">{title}</td>
+                        <td className="px-4 py-3 font-medium text-blue-600">
+                          {title}
+                        </td>
                         <td className="px-4 py-3 text-gray-600">{details}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
                             {section === "orders" ? (
                               <>
                                 {!item.isPaid && (
-                                  <button onClick={() => void updateOrder(item, "pay")} className="text-blue-600">Mark paid</button>
+                                  <button
+                                    onClick={() =>
+                                      void updateOrder(item, "pay")
+                                    }
+                                    className="text-blue-600"
+                                  >
+                                    Mark paid
+                                  </button>
                                 )}
                                 {!item.isDelivered && (
-                                  <button onClick={() => void updateOrder(item, "deliver")} className="text-blue-600">Mark delivered</button>
+                                  <button
+                                    onClick={() =>
+                                      void updateOrder(item, "deliver")
+                                    }
+                                    className="text-blue-600"
+                                  >
+                                    Mark delivered
+                                  </button>
                                 )}
                               </>
                             ) : (
                               <>
-                                <button onClick={() => startEdit(item)} className="text-blue-600">Edit</button>
+                                <button
+                                  onClick={() => startEdit(item)}
+                                  className="text-blue-600"
+                                >
+                                  Edit
+                                </button>
                                 {canDelete && (
-                                  <button onClick={() => void deleteEntity(item)} className="text-red-600">Delete</button>
+                                  <button
+                                    onClick={() => void deleteEntity(item)}
+                                    className="text-red-600"
+                                  >
+                                    Delete
+                                  </button>
                                 )}
                               </>
                             )}
@@ -412,31 +505,60 @@ export default function AdminDashboard() {
                     );
                   })}
                   {!items.length && (
-                    <tr><td className="px-4 py-8 text-center text-gray-500" colSpan={3}>No records found.</td></tr>
+                    <tr>
+                      <td
+                        className="px-4 py-8 text-center text-gray-500"
+                        colSpan={3}
+                      >
+                        No records found.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
             </div>
             <div className="mt-4 flex items-center justify-center gap-4">
-              <button disabled={page <= 1} onClick={() => setPage((value) => value - 1)} className="rounded border px-3 py-2 disabled:opacity-50">Previous</button>
-              <span className="text-sm text-gray-600">Page {page} of {totalPages}</span>
-              <button disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)} className="rounded border px-3 py-2 disabled:opacity-50">Next</button>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage((value) => value - 1)}
+                className="rounded border px-3 py-2 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-600">
+                Page {page} of {totalPages}
+              </span>
+              <button
+                disabled={page >= totalPages}
+                onClick={() => setPage((value) => value + 1)}
+                className="rounded border px-3 py-2 disabled:opacity-50"
+              >
+                Next
+              </button>
             </div>
           </section>
 
           {section !== "orders" && (
-            <form onSubmit={submitEntity} className="h-fit space-y-4 rounded-lg border bg-gray-50 p-5">
+            <form
+              onSubmit={submitEntity}
+              className="h-fit space-y-4 rounded-lg border bg-gray-50 p-5"
+            >
               <h2 className="text-xl font-bold text-blue-600">
-                {selected ? "Edit" : "Create"} {sectionLabels[section].slice(0, -1)}
+                {selected ? "Edit" : "Create"}{" "}
+                {sectionLabels[section].slice(0, -1)}
               </h2>
               {fields.map((field) => {
                 if (field === "role") {
                   return (
                     <label key={field} className="block">
-                      <span className="block text-sm font-medium mb-1">Role</span>
+                      <span className="block text-sm font-medium mb-1">
+                        Role
+                      </span>
                       <select
                         value={form.role ?? "user"}
-                        onChange={(event) => setField(field, event.target.value)}
+                        onChange={(event) =>
+                          setField(field, event.target.value)
+                        }
                         className="w-full rounded-lg border bg-white px-3 py-2"
                       >
                         <option value="user">User</option>
@@ -450,16 +572,23 @@ export default function AdminDashboard() {
                   const options = field === "category" ? categories : brands;
                   return (
                     <label key={field} className="block">
-                      <span className="block text-sm font-medium mb-1 capitalize">{field}</span>
+                      <span className="block text-sm font-medium mb-1 capitalize">
+                        {field}
+                      </span>
                       <select
                         required={field === "category"}
                         value={form[field] ?? ""}
-                        onChange={(event) => setField(field, event.target.value)}
+                        onChange={(event) =>
+                          setField(field, event.target.value)
+                        }
                         className="w-full rounded-lg border bg-white px-3 py-2"
                       >
                         <option value="">Select {field}</option>
                         {options.map((option) => (
-                          <option key={String(option._id)} value={String(option._id)}>
+                          <option
+                            key={String(option._id)}
+                            value={String(option._id)}
+                          >
                             {String(option.name ?? option._id)}
                           </option>
                         ))}
@@ -470,7 +599,9 @@ export default function AdminDashboard() {
                 if (field === "subcategories") {
                   return (
                     <label key={field} className="block">
-                      <span className="block text-sm font-medium mb-1">Subcategories</span>
+                      <span className="block text-sm font-medium mb-1">
+                        Subcategories
+                      </span>
                       <select
                         multiple
                         value={(form[field] ?? "").split(",").filter(Boolean)}
@@ -511,20 +642,32 @@ export default function AdminDashboard() {
                       <textarea
                         required={!selected}
                         value={form[field] ?? ""}
-                        onChange={(event) => setField(field, event.target.value)}
+                        onChange={(event) =>
+                          setField(field, event.target.value)
+                        }
                         rows={4}
                         className="w-full rounded-lg border bg-white px-3 py-2"
                       />
                     ) : (
                       <input
                         required={
-                          !["phone", "priceAfterDiscount", "colors", "password"].includes(field) ||
+                          ![
+                            "phone",
+                            "priceAfterDiscount",
+                            "colors",
+                            "password",
+                          ].includes(field) ||
                           (field === "password" && !selected)
                         }
                         type={
                           field === "password"
                             ? "password"
-                            : ["price", "priceAfterDiscount", "quantity", "discount"].includes(field)
+                            : [
+                                  "price",
+                                  "priceAfterDiscount",
+                                  "quantity",
+                                  "discount",
+                                ].includes(field)
                               ? "number"
                               : field === "expire"
                                 ? "date"
@@ -532,9 +675,15 @@ export default function AdminDashboard() {
                                   ? "email"
                                   : "text"
                         }
-                        min={["quantity", "price", "discount"].includes(field) ? 0 : undefined}
+                        min={
+                          ["quantity", "price", "discount"].includes(field)
+                            ? 0
+                            : undefined
+                        }
                         value={form[field] ?? ""}
-                        onChange={(event) => setField(field, event.target.value)}
+                        onChange={(event) =>
+                          setField(field, event.target.value)
+                        }
                         className="w-full rounded-lg border bg-white px-3 py-2"
                       />
                     )}
@@ -545,31 +694,43 @@ export default function AdminDashboard() {
               {["categories", "brands", "products"].includes(section) && (
                 <label className="block">
                   <span className="block text-sm font-medium mb-1">
-                    {section === "products" ? "Cover image" : "Image"} {selected ? "(optional)" : ""}
+                    {section === "products" ? "Cover image" : "Image"}{" "}
+                    {selected ? "(optional)" : ""}
                   </span>
                   <input
                     type="file"
                     accept="image/*"
                     required={section === "products" && !selected}
-                    onChange={(event) => setImage(event.target.files?.[0] ?? null)}
+                    onChange={(event) =>
+                      setImage(event.target.files?.[0] ?? null)
+                    }
                     className="w-full text-sm"
                   />
                 </label>
               )}
               {section === "products" && (
                 <label className="block">
-                  <span className="block text-sm font-medium mb-1">Additional product images</span>
+                  <span className="block text-sm font-medium mb-1">
+                    Additional product images
+                  </span>
                   <input
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(event) => setProductImages(Array.from(event.target.files ?? []).slice(0, 5))}
+                    onChange={(event) =>
+                      setProductImages(
+                        Array.from(event.target.files ?? []).slice(0, 5),
+                      )
+                    }
                     className="w-full text-sm"
                   />
                 </label>
               )}
               {section === "users" && (
-                <p className="text-xs text-gray-500">The API allows managers/admins to assign user roles. Account status is not exposed by the current API.</p>
+                <p className="text-xs text-gray-500">
+                  The API allows managers/admins to assign user roles. Account
+                  status is not exposed by the current API.
+                </p>
               )}
               <button
                 disabled={busy}

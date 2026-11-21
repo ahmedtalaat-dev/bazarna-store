@@ -2,14 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Trash2, Plus, Minus } from "lucide-react";
-import type { CartItem as CartLine } from "@/contexts/EcommerceContext";
-
-// Interfaces
-interface CartItemProps {
-  item: CartLine;
-  handleQuantityChange: (productId: string, quantity: number) => void;
-  handleRemove: (productId: string) => void;
-}
+import { CartItemProps } from "../../types/index";
 
 // Main Page
 export default function CartItem({
@@ -17,7 +10,6 @@ export default function CartItem({
   handleQuantityChange,
   handleRemove,
 }: CartItemProps) {
-  // Fallback image
   const fallbackImage = "/placeholder.png";
 
   return (

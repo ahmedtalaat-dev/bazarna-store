@@ -1,15 +1,7 @@
 // Imports
 import Link from "next/link";
 import { Check } from "lucide-react";
-
-// Props interface
-interface OrderPlacedProps {
-  orderId: string;
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  total: number;
-}
+import { OrderPlacedProps } from "../../types/index";
 
 // Main Page
 export default function OrderPlaced({
@@ -23,7 +15,6 @@ export default function OrderPlaced({
     <div className="min-h-screen bg-white">
       {/* Centered content */}
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
-
         {/* Success icon */}
         <div className="w-16 h-16 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
           <Check aria-hidden="true" className="w-8 h-8 text-green-600" />
@@ -36,13 +27,11 @@ export default function OrderPlaced({
 
         {/* Description */}
         <p className="text-gray-600 mb-8">
-          Thank you for your purchase. Your order has been placed
-          successfully.
+          Thank you for your purchase. Your order has been placed successfully.
         </p>
 
         {/* Order details card */}
         <div className="bg-gray-50 rounded-lg p-8 mb-8 text-left">
-          
           {/* Order ID label */}
           <p className="text-gray-600 mb-2">Order ID:</p>
 
@@ -56,13 +45,10 @@ export default function OrderPlaced({
 
           {/* Price details */}
           <div className="space-y-2">
-            
             {/* Subtotal */}
             <div className="flex justify-between">
               <span className="text-gray-600">Subtotal:</span>
-              <span className="font-medium">
-                ${subtotal.toFixed(2)}
-              </span>
+              <span className="font-medium">${subtotal.toFixed(2)}</span>
             </div>
 
             {/* Shipping */}
@@ -76,9 +62,7 @@ export default function OrderPlaced({
             {/* Tax */}
             <div className="flex justify-between">
               <span className="text-gray-600">Tax:</span>
-              <span className="font-medium">
-                ${tax.toFixed(2)}
-              </span>
+              <span className="font-medium">${tax.toFixed(2)}</span>
             </div>
 
             {/* Total */}
@@ -91,7 +75,6 @@ export default function OrderPlaced({
 
         {/* Action buttons */}
         <div className="flex gap-4 flex-col sm:flex-row">
-          
           <Link
             href="/orders"
             className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors text-center"
