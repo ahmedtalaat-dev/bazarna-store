@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Page Not Found | Bazarna",
   description:
     "The page you are looking for does not exist. Explore other products and pages on Bazarna.",
-  robots: "noindex, follow", // Prevent indexing by search engines
+  robots: "noindex, follow",
 };
 
 // Not Found Page
@@ -27,8 +27,8 @@ export default function NotFound() {
 
           {/* Description */}
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Sorry, the page you&apos;re looking for doesn&apos;t exist. It might have been
-            moved or deleted.
+            Sorry, the page you&apos;re looking for doesn&apos;t exist. It might
+            have been moved or deleted.
           </p>
 
           {/* Main Actions */}

@@ -42,7 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         card: "summary_large_image",
         title: product.title,
         description: product.description,
-        images: [product.imageCover || product.images?.[0] || "/og/default.png"],
+        images: [
+          product.imageCover || product.images?.[0] || "/og/default.png",
+        ],
       },
     };
   } catch {
