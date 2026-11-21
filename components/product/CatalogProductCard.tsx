@@ -1,17 +1,11 @@
 "use client";
 
-import { Product } from "@/data";
+import { ProductCardProps } from "../../types/index";
 import { Heart, ShoppingCart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useToast } from "@/contexts/ToastContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
-
-interface ProductCardProps {
-  product: Product;
-  isQuickViewOpen?: boolean;
-  onQuickView?: (product: Product) => void;
-}
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } =
@@ -20,7 +14,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const inWishlist = isInWishlist(product.id);
 
-  // ✅ FIX: safe image
+  // safe image
   const imageSrc =
     product.imageCover ||
     (product.images && product.images.length > 0 && product.images[0]) ||

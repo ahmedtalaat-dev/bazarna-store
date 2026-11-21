@@ -27,7 +27,9 @@ export default function WishlistPageContent() {
       addToast("Removed from wishlist", "info");
     } catch (error) {
       addToast(
-        error instanceof Error ? error.message : "Could not update your wishlist.",
+        error instanceof Error
+          ? error.message
+          : "Could not update your wishlist.",
         "error",
       );
     }
@@ -41,7 +43,9 @@ export default function WishlistPageContent() {
       addToast("Added to cart!", "success");
     } catch (error) {
       addToast(
-        error instanceof Error ? error.message : "Could not add this item to cart.",
+        error instanceof Error
+          ? error.message
+          : "Could not add this item to cart.",
         "error",
       );
     }

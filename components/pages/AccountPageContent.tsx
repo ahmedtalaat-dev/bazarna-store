@@ -61,7 +61,10 @@ export default function AccountPageContent() {
       await refreshUser();
       addToast("Profile updated.", "success");
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Could not update profile.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Could not update profile.",
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -73,10 +76,19 @@ export default function AccountPageContent() {
     try {
       await addAddress(address);
       setAddresses(await getAddresses());
-      setAddress({ alias: "", details: "", phone: "", city: "", postalCode: "" });
+      setAddress({
+        alias: "",
+        details: "",
+        phone: "",
+        city: "",
+        postalCode: "",
+      });
       addToast("Address saved.", "success");
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Could not save address.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Could not save address.",
+        "error",
+      );
     } finally {
       setSaving(false);
     }
@@ -88,18 +100,30 @@ export default function AccountPageContent() {
       setAddresses((items) => items.filter((item) => String(item._id) !== id));
       addToast("Address removed.", "info");
     } catch (error) {
-      addToast(error instanceof Error ? error.message : "Could not remove address.", "error");
+      addToast(
+        error instanceof Error ? error.message : "Could not remove address.",
+        "error",
+      );
     }
   };
 
   if (loading) {
-    return <p className="min-h-screen flex items-center justify-center">Loading account...</p>;
+    return (
+      <p className="min-h-screen flex items-center justify-center">
+        Loading account...
+      </p>
+    );
   }
   if (!isAuthenticated) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
-        <h1 className="text-3xl font-bold text-blue-600">Sign in to your account</h1>
-        <Link href="/auth/login?next=%2Faccount" className="px-6 py-3 bg-blue-600 text-white rounded-lg">
+        <h1 className="text-3xl font-bold text-blue-600">
+          Sign in to your account
+        </h1>
+        <Link
+          href="/auth/login?next=%2Faccount"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg"
+        >
           Sign In
         </Link>
       </div>
@@ -136,18 +160,28 @@ export default function AccountPageContent() {
                 {tab.label}
               </button>
             ))}
-            <Link href="/orders" className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg">
+            <Link
+              href="/orders"
+              className="block px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg"
+            >
               All Orders
             </Link>
           </aside>
 
           <div className="flex-1">
             {activeTab === "profile" && (
-              <form onSubmit={submitProfile} className="bg-gray-50 rounded-lg p-8 space-y-5">
-                <h2 className="text-2xl font-bold text-blue-600">Profile Information</h2>
+              <form
+                onSubmit={submitProfile}
+                className="bg-gray-50 rounded-lg p-8 space-y-5"
+              >
+                <h2 className="text-2xl font-bold text-blue-600">
+                  Profile Information
+                </h2>
                 {(["name", "email", "phone"] as const).map((field) => (
                   <label key={field} className="block">
-                    <span className="block text-sm text-gray-600 mb-2 capitalize">{field}</span>
+                    <span className="block text-sm text-gray-600 mb-2 capitalize">
+                      {field}
+                    </span>
                     <input
                       type={field === "email" ? "email" : "text"}
                       required={field !== "phone"}
@@ -162,7 +196,10 @@ export default function AccountPageContent() {
                     />
                   </label>
                 ))}
-                <button disabled={saving} className="px-6 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+                <button
+                  disabled={saving}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+                >
                   {saving ? "Saving..." : "Save Profile"}
                 </button>
                 <p className="text-sm text-gray-600">
@@ -173,14 +210,25 @@ export default function AccountPageContent() {
 
             {activeTab === "addresses" && (
               <div className="bg-gray-50 rounded-lg p-8">
-                <h2 className="text-2xl font-bold text-blue-600 mb-6">Saved Addresses</h2>
-                <form onSubmit={submitAddress} className="grid md:grid-cols-2 gap-3 mb-8">
-                  {(["alias", "details", "phone", "city", "postalCode"] as const).map((field) => (
+                <h2 className="text-2xl font-bold text-blue-600 mb-6">
+                  Saved Addresses
+                </h2>
+                <form
+                  onSubmit={submitAddress}
+                  className="grid md:grid-cols-2 gap-3 mb-8"
+                >
+                  {(
+                    ["alias", "details", "phone", "city", "postalCode"] as const
+                  ).map((field) => (
                     <input
                       key={field}
                       required
                       aria-label={field}
-                      placeholder={field === "postalCode" ? "Postal code" : field[0].toUpperCase() + field.slice(1)}
+                      placeholder={
+                        field === "postalCode"
+                          ? "Postal code"
+                          : field[0].toUpperCase() + field.slice(1)
+                      }
                       value={address[field]}
                       onChange={(event) =>
                         setAddress((previous) => ({
@@ -191,28 +239,48 @@ export default function AccountPageContent() {
                       className="rounded-lg border border-gray-400 outline-blue-600 focus:border-blue-600 px-4 py-3"
                     />
                   ))}
-                  <button disabled={saving} className="px-4 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50">
+                  <button
+                    disabled={saving}
+                    className="px-4 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+                  >
                     Add Address
                   </button>
                 </form>
                 <div className="space-y-4">
                   {addresses.map((item) => (
-                    <div key={String(item._id)} className="bg-white rounded-lg p-6 flex items-start justify-between gap-4">
+                    <div
+                      key={String(item._id)}
+                      className="bg-white rounded-lg p-6 flex items-start justify-between gap-4"
+                    >
                       <div className="flex gap-3">
                         <MapPin className="w-5 h-5 mt-1 text-blue-600" />
                         <div>
-                          <p className="font-semibold text-blue-600">{String(item.alias ?? "Address")}</p>
-                          <p className="text-gray-600">{String(item.details ?? "")}</p>
-                          <p className="text-gray-600">{String(item.city ?? "")} {String(item.postalCode ?? "")}</p>
-                          <p className="text-gray-600">{String(item.phone ?? "")}</p>
+                          <p className="font-semibold text-blue-600">
+                            {String(item.alias ?? "Address")}
+                          </p>
+                          <p className="text-gray-600">
+                            {String(item.details ?? "")}
+                          </p>
+                          <p className="text-gray-600">
+                            {String(item.city ?? "")}{" "}
+                            {String(item.postalCode ?? "")}
+                          </p>
+                          <p className="text-gray-600">
+                            {String(item.phone ?? "")}
+                          </p>
                         </div>
                       </div>
-                      <button onClick={() => void deleteAddress(String(item._id))} className="text-red-600">
+                      <button
+                        onClick={() => void deleteAddress(String(item._id))}
+                        className="text-red-600"
+                      >
                         Remove
                       </button>
                     </div>
                   ))}
-                  {!addresses.length && <p className="text-gray-600">No saved addresses yet.</p>}
+                  {!addresses.length && (
+                    <p className="text-gray-600">No saved addresses yet.</p>
+                  )}
                 </div>
               </div>
             )}

@@ -42,7 +42,9 @@ export default function OrdersPageContent() {
       .catch((cause: unknown) => {
         if (!active) return;
         setError(
-          cause instanceof Error ? cause.message : "Could not load your orders.",
+          cause instanceof Error
+            ? cause.message
+            : "Could not load your orders.",
         );
       })
       .finally(() => {
@@ -55,21 +57,32 @@ export default function OrdersPageContent() {
   }, [authLoading, isAuthenticated, selectedOrderId]);
 
   if (authLoading) {
-    return <p className="min-h-[60vh] flex items-center justify-center">Loading orders...</p>;
+    return (
+      <p className="min-h-[60vh] flex items-center justify-center">
+        Loading orders...
+      </p>
+    );
   }
   if (!isAuthenticated) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <h1 className="text-3xl font-bold text-blue-600">Your Orders</h1>
         <p className="text-gray-600">Sign in to view your orders.</p>
-        <Link href="/auth/login?next=%2Forders" className="rounded-lg bg-blue-600 px-6 py-3 text-white">
+        <Link
+          href="/auth/login?next=%2Forders"
+          className="rounded-lg bg-blue-600 px-6 py-3 text-white"
+        >
           Sign In
         </Link>
       </div>
     );
   }
   if (loading) {
-    return <p className="min-h-[60vh] flex items-center justify-center">Loading orders...</p>;
+    return (
+      <p className="min-h-[60vh] flex items-center justify-center">
+        Loading orders...
+      </p>
+    );
   }
 
   const activeOrder = selectedOrder ?? undefined;
@@ -83,11 +96,17 @@ export default function OrdersPageContent() {
       <section className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <h1 className="text-4xl font-bold text-blue-600">My Orders</h1>
-          <p className="text-gray-600 mt-2">Review your order history and details.</p>
+          <p className="text-gray-600 mt-2">
+            Review your order history and details.
+          </p>
         </div>
       </section>
       <div className="max-w-7xl mx-auto px-4 py-12">
-        {error && <p role="alert" className="mb-6 text-red-600">{error}</p>}
+        {error && (
+          <p role="alert" className="mb-6 text-red-600">
+            {error}
+          </p>
+        )}
         {activeOrder && (
           <section className="mb-10 rounded-lg border bg-gray-50 p-6">
             <div className="flex flex-wrap justify-between gap-4 mb-5">
@@ -96,18 +115,26 @@ export default function OrdersPageContent() {
                   Order {String(activeOrder._id)}
                 </h2>
                 <p className="text-gray-600">
-                  {new Date(String(activeOrder.createdAt ?? "")).toLocaleString()}
+                  {new Date(
+                    String(activeOrder.createdAt ?? ""),
+                  ).toLocaleString()}
                 </p>
               </div>
               <p className="font-semibold text-blue-600">
-                {activeOrder.isDelivered ? "Delivered" : activeOrder.isPaid ? "Paid" : "Processing"}
+                {activeOrder.isDelivered
+                  ? "Delivered"
+                  : activeOrder.isPaid
+                    ? "Paid"
+                    : "Processing"}
               </p>
             </div>
             <p className="mb-4 text-gray-700">
-              Cash on Delivery · ${Number(activeOrder.totalOrderPrice ?? 0).toFixed(2)}
+              Cash on Delivery · $
+              {Number(activeOrder.totalOrderPrice ?? 0).toFixed(2)}
             </p>
             <p className="mb-5 text-gray-600">
-              Ship to: {String(shippingAddress.details ?? "")}, {String(shippingAddress.city ?? "")}
+              Ship to: {String(shippingAddress.details ?? "")},{" "}
+              {String(shippingAddress.city ?? "")}
             </p>
             <div className="space-y-3">
               {rawItems.map((value, index) => {
@@ -118,7 +145,10 @@ export default function OrdersPageContent() {
                     ? product.imageCover
                     : "/placeholder.png";
                 return (
-                  <div key={String(item._id ?? index)} className="flex items-center gap-4 bg-white p-3 rounded-lg">
+                  <div
+                    key={String(item._id ?? index)}
+                    className="flex items-center gap-4 bg-white p-3 rounded-lg"
+                  >
                     <Image
                       src={image}
                       alt={String(product.title ?? "Product")}
@@ -128,10 +158,19 @@ export default function OrdersPageContent() {
                       className="h-16 w-16 rounded object-cover"
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-blue-600">{String(product.title ?? "Product")}</p>
-                      <p className="text-sm text-gray-500">Qty {Number(item.quantity ?? 0)}</p>
+                      <p className="font-medium text-blue-600">
+                        {String(product.title ?? "Product")}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Qty {Number(item.quantity ?? 0)}
+                      </p>
                     </div>
-                    <p>${(Number(item.price ?? 0) * Number(item.quantity ?? 0)).toFixed(2)}</p>
+                    <p>
+                      $
+                      {(
+                        Number(item.price ?? 0) * Number(item.quantity ?? 0)
+                      ).toFixed(2)}
+                    </p>
                   </div>
                 );
               })}
@@ -142,7 +181,9 @@ export default function OrdersPageContent() {
         {orders.length ? (
           <div className="space-y-4">
             {orders.map((order) => {
-              const items = Array.isArray(order.cartItems) ? order.cartItems : [];
+              const items = Array.isArray(order.cartItems)
+                ? order.cartItems
+                : [];
               const selected = String(order._id) === selectedOrderId;
               return (
                 <Link
@@ -155,17 +196,28 @@ export default function OrdersPageContent() {
                 >
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div>
-                      <p className="font-semibold text-blue-600">#{String(order._id)}</p>
+                      <p className="font-semibold text-blue-600">
+                        #{String(order._id)}
+                      </p>
                       <p className="text-sm text-gray-600">
-                        {new Date(String(order.createdAt ?? "")).toLocaleDateString()} · {items.length} item{items.length === 1 ? "" : "s"}
+                        {new Date(
+                          String(order.createdAt ?? ""),
+                        ).toLocaleDateString()}{" "}
+                        · {items.length} item{items.length === 1 ? "" : "s"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${Number(order.totalOrderPrice ?? 0).toFixed(2)}</p>
+                      <p className="font-semibold">
+                        ${Number(order.totalOrderPrice ?? 0).toFixed(2)}
+                      </p>
                       <p className="text-sm text-gray-600">Cash on Delivery</p>
                     </div>
                     <span className="text-sm font-medium text-blue-600">
-                      {order.isDelivered ? "Delivered" : order.isPaid ? "Paid" : "Processing"}
+                      {order.isDelivered
+                        ? "Delivered"
+                        : order.isPaid
+                          ? "Paid"
+                          : "Processing"}
                     </span>
                   </div>
                 </Link>
@@ -174,8 +226,12 @@ export default function OrdersPageContent() {
           </div>
         ) : !error ? (
           <div className="text-center py-16">
-            <h2 className="text-2xl font-bold text-blue-600 mb-3">No orders yet</h2>
-            <Link href="/shop" className="text-blue-600 hover:underline">Browse products</Link>
+            <h2 className="text-2xl font-bold text-blue-600 mb-3">
+              No orders yet
+            </h2>
+            <Link href="/shop" className="text-blue-600 hover:underline">
+              Browse products
+            </Link>
           </div>
         ) : null}
       </div>

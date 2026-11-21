@@ -3,13 +3,16 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product/CatalogProductCard";
-import { ProductFilters, type FilterOptions } from "@/components/product/product-filters";
+import {
+  ProductFilters,
+  type FilterOptions,
+} from "@/components/product/productFilters";
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 import Pagination from "@/components/ui/Pagination";
 import { getProductPage } from "@/lib/api";
 import type { Product } from "../../types/index";
 
-const pageSize = 12;
+const pageSize = 21;
 const catalogPageSize = 50;
 
 export default function SearchResultsPageContent() {
@@ -61,7 +64,9 @@ export default function SearchResultsPageContent() {
         );
         if (active) {
           setProducts(
-            [firstPage, ...remainingPages].flatMap((response) => response.products),
+            [firstPage, ...remainingPages].flatMap(
+              (response) => response.products,
+            ),
           );
         }
       } catch (cause: unknown) {
@@ -143,7 +148,13 @@ export default function SearchResultsPageContent() {
   const handleFilterChange = useCallback(
     (newFilters: FilterOptions) => {
       const params = new URLSearchParams(searchParams.toString());
-      for (const key of ["category", "color", "rating", "minPrice", "maxPrice"]) {
+      for (const key of [
+        "category",
+        "color",
+        "rating",
+        "minPrice",
+        "maxPrice",
+      ]) {
         params.delete(key);
       }
       if (newFilters.category) params.set("category", newFilters.category);
@@ -161,7 +172,14 @@ export default function SearchResultsPageContent() {
 
   const handleResetFilters = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
-    for (const key of ["category", "color", "rating", "minPrice", "maxPrice", "page"]) {
+    for (const key of [
+      "category",
+      "color",
+      "rating",
+      "minPrice",
+      "maxPrice",
+      "page",
+    ]) {
       params.delete(key);
     }
     router.push(`/search${params.size ? `?${params.toString()}` : ""}`);

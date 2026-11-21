@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product/CatalogProductCard";
-import { ProductFilters, type FilterOptions } from "@/components/product/product-filters";
+import { ProductFilters, type FilterOptions } from "@/components/product/productFilters";
 import ProductSkeleton from "@/components/product/ProductSkeleton";
 import Pagination from "@/components/ui/Pagination";
 import { getProductPage, type ProductPage } from "@/lib/api";
 
-const pageSize = 12;
+const pageSize = 21;
 
 export default function ShopPageContent() {
   const router = useRouter();

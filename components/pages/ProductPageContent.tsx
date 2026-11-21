@@ -1,8 +1,8 @@
 "use client";
 
 // Imports
-import { ImageGallery } from "@/components/product/image-gallery";
-import { ProductCard } from "@/components/product/product-card";
+import { ImageGallery } from "@/components/product/imageGallery";
+import { ProductCard } from "@/components/product/productCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEcommerce } from "@/contexts/EcommerceContext";
 import { useToast } from "@/contexts/ToastContext";

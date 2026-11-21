@@ -1,8 +1,8 @@
 "use client";
 
 // Imports
-import { ProductCard } from "@/components/product/product-card";
-import { type Product } from "@/data";
+import { ProductCard } from "@/components/product/productCard";
+import { type Product } from "../../types/index";
 import Link from "next/link";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -74,7 +74,8 @@ export function BestSellers() {
 
     const sliderDiv = sliderRef.current;
     sliderDiv.addEventListener("transitionend", handleTransitionEnd);
-    return () => sliderDiv.removeEventListener("transitionend", handleTransitionEnd);
+    return () =>
+      sliderDiv.removeEventListener("transitionend", handleTransitionEnd);
   }, [currentIndex, totalSlides, loading]);
 
   /* ================= Render ================= */
@@ -84,8 +85,12 @@ export function BestSellers() {
         {/* Header */}
         <div className="flex items-center justify-between mb-12">
           <div>
-            <h2 className="text-4xl font-bold text-blue-600 mb-2">Best Sellers</h2>
-            <p className="text-gray-600">Most popular products loved by our customers</p>
+            <h2 className="text-4xl font-bold text-blue-600 mb-2">
+              Best Sellers
+            </h2>
+            <p className="text-gray-600">
+              Most popular products loved by our customers
+            </p>
           </div>
           <Link
             href="/shop?sort=best-selling"

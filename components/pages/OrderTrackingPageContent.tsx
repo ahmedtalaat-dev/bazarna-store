@@ -25,7 +25,9 @@ export default function OrderTrackingPageContent() {
       setOrder(await getOrder(orderId.trim()));
     } catch (cause) {
       setOrder(null);
-      setError(cause instanceof Error ? cause.message : "Could not find this order.");
+      setError(
+        cause instanceof Error ? cause.message : "Could not find this order.",
+      );
     } finally {
       setLoading(false);
     }
@@ -64,13 +66,20 @@ export default function OrderTrackingPageContent() {
             </p>
           ) : (
             <p className="text-sm text-gray-500 mb-5">
-              <Link href="/auth/login?next=%2Forder-tracking" className="text-blue-600 underline">
+              <Link
+                href="/auth/login?next=%2Forder-tracking"
+                className="text-blue-600 underline"
+              >
                 Sign in
               </Link>{" "}
               to continue.
             </p>
           )}
-          {error && <p role="alert" className="mb-4 text-red-600">{error}</p>}
+          {error && (
+            <p role="alert" className="mb-4 text-red-600">
+              {error}
+            </p>
+          )}
           <button
             disabled={loading || !isAuthenticated}
             className="w-full rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white disabled:opacity-50"
@@ -85,29 +94,45 @@ export default function OrderTrackingPageContent() {
               Order {String(order._id)}
             </h2>
             <p className="text-gray-600 mt-1">
-              Placed {new Date(String(order.createdAt ?? "")).toLocaleDateString()}
+              Placed{" "}
+              {new Date(String(order.createdAt ?? "")).toLocaleDateString()}
             </p>
             <p className="mt-4 font-medium">
-              Cash on Delivery · ${Number(order.totalOrderPrice ?? 0).toFixed(2)}
+              Cash on Delivery · $
+              {Number(order.totalOrderPrice ?? 0).toFixed(2)}
             </p>
             <div className="mt-8 space-y-6">
               {steps.map((step, index) => {
-                const Icon = index === 0 ? Package : index === 1 ? Clock : CheckCircle;
+                const Icon =
+                  index === 0 ? Package : index === 1 ? Clock : CheckCircle;
                 return (
                   <div key={step.title} className="flex items-center gap-4">
-                    <span className={`flex h-11 w-11 items-center justify-center rounded-full ${
-                      step.complete ? "bg-green-600 text-white" : "bg-gray-200 text-gray-500"
-                    }`}>
+                    <span
+                      className={`flex h-11 w-11 items-center justify-center rounded-full ${
+                        step.complete
+                          ? "bg-green-600 text-white"
+                          : "bg-gray-200 text-gray-500"
+                      }`}
+                    >
                       <Icon className="h-5 w-5" />
                     </span>
-                    <span className={step.complete ? "font-semibold text-blue-600" : "text-gray-500"}>
+                    <span
+                      className={
+                        step.complete
+                          ? "font-semibold text-blue-600"
+                          : "text-gray-500"
+                      }
+                    >
                       {step.title}
                     </span>
                   </div>
                 );
               })}
             </div>
-            <Link href="/orders" className="mt-8 inline-block text-blue-600 underline">
+            <Link
+              href="/orders"
+              className="mt-8 inline-block text-blue-600 underline"
+            >
               View all orders
             </Link>
           </section>
