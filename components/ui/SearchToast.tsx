@@ -1,31 +1,9 @@
 "use client";
 
 // Imports
-import { FormEvent } from "react";
+import { SearchToastProps } from "../../types/index";
 import { X, Search } from "lucide-react";
-
-// Search Toast type
-type SearchToastProps = {
-  open: boolean;
-  query: string;
-  setQuery: (value: string) => void;
-  onClose: () => void;
-  onSubmit: (e: FormEvent<HTMLFormElement>) => void;
-};
-
-// Quick Searches
-const quickSearches = [
-  "Kiwi",
-  "Chair",
-  "Oil",
-  "Bed",
-  "Food",
-  "Gaming Chair",
-  "Smart Watch",
-  "Fish",
-  "Mascara",
-  "Sofa",
-];
+import { quickSearches } from "../../data/index";
 
 // Main Page
 export function SearchToast({

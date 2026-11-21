@@ -1,9 +1,4 @@
-// Pagination type
-type PaginationProps = {
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-};
+import { PaginationProps } from "../../types/index";
 
 // Main Page
 export default function Pagination({
