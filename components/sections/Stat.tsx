@@ -3,13 +3,7 @@
 // Imports
 import { useMotionValue, animate, useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-
-// States interface
-interface StatProps {
-  value: number | string;
-  suffix?: string;
-  label: string;
-}
+import { StatProps } from "../../types/index";
 
 // Main Page
 export default function Stat({ value, suffix = "", label }: StatProps) {
@@ -39,4 +33,5 @@ export default function Stat({ value, suffix = "", label }: StatProps) {
       </p>
       <p className="text-gray-600">{label}</p>
     </div>
-  );}
+  );
+}
