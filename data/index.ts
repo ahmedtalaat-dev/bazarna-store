@@ -254,3 +254,17 @@ export const privacySections = [
     { name: "Contact", href: "/contact" },
     { name: "FAQ", href: "/faq" },
   ];
+
+  // Quick Searches
+  export const quickSearches = [
+    "Digital Camera",
+    "Mascara",
+    "Swimming Goggles",
+    "Bed",
+    "Digital Sports Stopwatch",
+    "Boxing Gloves",
+    "Smart Watch",
+    "Football",
+    "Galaxy Watch Ultra",
+    "iPad Air M2",
+  ];
